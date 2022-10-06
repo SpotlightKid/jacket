@@ -56,7 +56,7 @@ type
 
 type
     JackStatus* {.size: sizeof(cint).} = enum
-        Success = 0x00
+        Success = 0x00,
         Failure = 0x01,
         InvalidOption = 0x02,
         NameNotUnique = 0x04,
