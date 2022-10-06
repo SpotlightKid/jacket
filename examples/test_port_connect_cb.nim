@@ -7,10 +7,12 @@ var status: cint
 
 proc cleanup() {.noconv.} =
     echo "Cleaning up..."
+
     if client != nil:
         discard deactivate(client)
         discard clientClose(client)
         client = nil
+
     quit 0
 
 proc portConnected(portA: PortIdT; portB: PortIdT; connect: cint; arg: pointer) {.exportc.} =
@@ -29,7 +31,7 @@ proc portConnected(portA: PortIdT; portB: PortIdT; connect: cint; arg: pointer) 
     else:
         echo "Port B: <unknown>"
         
-    var action = if connect > 0: "connect" else: "disconnect"
+    let action = if connect > 0: "connect" else: "disconnect"
     echo fmt"Action: {action}"
     
 
