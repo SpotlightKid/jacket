@@ -457,37 +457,33 @@ proc setInfoFunction*(infoCallback: JackInfoCallback) {.importc: "jack_set_info_
 
 proc getJackStatusErrorString*(status: cint): string =
     # Get JACK error status as string.
-    if status == ord(Success):
+    if status == Success.ord:
         return ""
 
-    var errorString = ""
-
-    if status == ord(Failure):
+    if status == Failure.ord:
         # Only include this generic message if no other error status is set
-        errorString = "Overall operation failed"
-    if (status and ord(InvalidOption)) > 0:
-        errorString &= "\nThe operation contained an invalid and unsupported option"
-    if (status and ord(NameNotUnique)) > 0:
-        errorString &= "\nThe desired client name was not unique"
-    if (status and ord(ServerStarted)) > 0:
-        errorString &= "\nThe JACK server was started as a result of this operation"
-    if (status and ord(ServerFailed)) > 0:
-        errorString &= "\nUnable to connect to the JACK server"
-    if (status and ord(ServerError)) > 0:
-        errorString &= "\nCommunication error with the JACK server"
-    if (status and ord(NoSuchClient)) > 0:
-        errorString &= "\nRequested client does not exist"
-    if (status and ord(LoadFailure)) > 0:
-        errorString &= "\nUnable to load internal client"
-    if (status and ord(InitFailure)) > 0:
-        errorString &= "\nUnable to initialize client"
-    if (status and ord(ShmFailure)) > 0:
-        errorString &= "\nUnable to access shared memory"
-    if (status and ord(VersionError)) > 0:
-        errorString &= "\nClient's protocol version does not match"
-    if (status and ord(BackendError)) > 0:
-        errorString &= "\nBackend Error"
-    if (status and ord(ClientZombie)) > 0:
-        errorString &= "\nClient is being shutdown against its will"
-
-    return errorString
+        result = "Overall operation failed"
+    if (status and InvalidOption.ord) > 0:
+        result.add("\nThe operation contained an invalid and unsupported option")
+    if (status and NameNotUnique.ord) > 0:
+        result.add("\nThe desired client name was not unique")
+    if (status and ServerStarted.ord) > 0:
+        result.add("\nThe JACK server was started as a result of this operation")
+    if (status and ServerFailed.ord) > 0:
+        result.add("\nUnable to connect to the JACK server")
+    if (status and ServerError.ord) > 0:
+        result.add("\nCommunication error with the JACK server")
+    if (status and NoSuchClient.ord) > 0:
+        result.add("\nRequested client does not exist")
+    if (status and LoadFailure.ord) > 0:
+        result.add("\nUnable to load internal client")
+    if (status and InitFailure.ord) > 0:
+        result.add("\nUnable to initialize client")
+    if (status and ShmFailure.ord) > 0:
+        result.add("\nUnable to access shared memory")
+    if (status and VersionError.ord) > 0:
+        result.add("\nClient's protocol version does not match")
+    if (status and BackendError.ord) > 0:
+        result.add("\nBackend Error")
+    if (status and ClientZombie.ord) > 0:
+        result.add("\nClient is being shutdown against its will")
