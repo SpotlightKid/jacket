@@ -15,7 +15,7 @@ proc cleanup() {.noconv.} =
 
     quit 0
 
-proc portConnected(portA: PortIdT; portB: PortIdT; connect: cint; arg: pointer) {.exportc.} =
+proc portConnected(portA: PortIdT; portB: PortIdT; connect: cint; arg: pointer) {.cdecl.} =
     let portAPtr = portById(client, portA)
     let portBPtr = portById(client, portB)
     

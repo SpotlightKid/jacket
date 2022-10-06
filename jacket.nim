@@ -86,23 +86,23 @@ type
 
 # Callback function types
 type
-    JackProcessCallback* = proc (nframes: NframesT; arg: pointer): cint
-    JackThreadCallback* = proc (arg: pointer): pointer
-    JackThreadInitCallback* = proc (arg: pointer)
-    JackGraphOrderCallback* = proc (arg: pointer): cint
-    JackXRunCallback* = proc (arg: pointer): cint
-    JackBufferSizeCallback* = proc (nframes: NframesT; arg: pointer): cint
-    JackSampleRateCallback* = proc (nframes: NframesT; arg: pointer): cint
-    JackPortRegistrationCallback* = proc (port: PortIdT; flag: cint; arg: pointer)
-    JackClientRegistrationCallback* = proc (name: cstring; flag: cint; arg: pointer)
-    JackPortConnectCallback* = proc (portA: PortIdT; portB: PortIdT; connect: cint; arg: pointer)
-    JackPortRenameCallback* = proc (port: PortIdT; oldName: cstring; newName: cstring; arg: pointer)
-    JackFreewheelCallback* = proc (starting: cint; arg: pointer)
-    JackShutdownCallback* = proc (arg: pointer)
-    JackInfoShutdownCallback* = proc (code: JackStatus; reason: cstring; arg: pointer)
-    JackLatencyCallback* = proc (mode: JackLatencyCallbackMode; arg: pointer)
-    JackInfoCallback* = proc (msg: cstring)
-    JackErrorCallback* = proc (msg: cstring)
+    JackProcessCallback* = proc (nframes: NframesT; arg: pointer): cint {.cdecl.}
+    JackThreadCallback* = proc (arg: pointer): pointer {.cdecl.}
+    JackThreadInitCallback* = proc (arg: pointer) {.cdecl.}
+    JackGraphOrderCallback* = proc (arg: pointer): cint {.cdecl.}
+    JackXRunCallback* = proc (arg: pointer): cint {.cdecl.}
+    JackBufferSizeCallback* = proc (nframes: NframesT; arg: pointer): cint {.cdecl.}
+    JackSampleRateCallback* = proc (nframes: NframesT; arg: pointer): cint {.cdecl.}
+    JackPortRegistrationCallback* = proc (port: PortIdT; flag: cint; arg: pointer) {.cdecl.}
+    JackClientRegistrationCallback* = proc (name: cstring; flag: cint; arg: pointer) {.cdecl.}
+    JackPortConnectCallback* = proc (portA: PortIdT; portB: PortIdT; connect: cint; arg: pointer) {.cdecl.}
+    JackPortRenameCallback* = proc (port: PortIdT; oldName: cstring; newName: cstring; arg: pointer) {.cdecl.}
+    JackFreewheelCallback* = proc (starting: cint; arg: pointer) {.cdecl.}
+    JackShutdownCallback* = proc (arg: pointer) {.cdecl.}
+    JackInfoShutdownCallback* = proc (code: JackStatus; reason: cstring; arg: pointer) {.cdecl.}
+    JackLatencyCallback* = proc (mode: JackLatencyCallbackMode; arg: pointer) {.cdecl.}
+    JackInfoCallback* = proc (msg: cstring) {.cdecl.}
+    JackErrorCallback* = proc (msg: cstring) {.cdecl.}
 
 
 # ----------------------------- Version info ------------------------------
