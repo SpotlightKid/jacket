@@ -1,30 +1,31 @@
-import std/[strformat, os]
-
+import std/os
 import jacket
 
-var client: ClientTPtr
+var jclient: ClientTPtr
 var status: cint
 
 proc cleanup() {.noconv.} =
     echo "Cleaning up..."
-    if client != nil:
-        discard clientClose(client)
-        client = nil
+    
+    if jclient != nil:
+        discard clientClose(jclient)
+        jclient = nil
+    
     quit 0
 
 
-client = clientOpen("jacket_port_register", ord(NoStartServer) or ord(UseExactName), addr status)
+jclient = clientOpen("jacket_port_register", NoStartServer.ord or UseExactName.ord, addr status)
 
-echo fmt"Server status: {status}"
+echo "Server status: " & $status
 
-if client == nil:
+if jclient == nil:
     echo getJackStatusErrorString(status)
     quit 1
 
 setControlCHook(cleanup)
 
-discard portRegister(client, "in_1", JACK_DEFAULT_AUDIO_TYPE, ord(PortIsInput), 0)
-discard portRegister(client, "out_1", JACK_DEFAULT_AUDIO_TYPE, ord(PortIsOutput), 0)
+discard portRegister(jclient, "in_1", JACK_DEFAULT_AUDIO_TYPE, PortIsInput.ord, 0)
+discard portRegister(jclient, "out_1", JACK_DEFAULT_AUDIO_TYPE, PortIsOutput.ord, 0)
 
 while true:
     sleep(50)

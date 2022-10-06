@@ -1,55 +1,51 @@
-import std/[strformat, os]
-
+import std/os
 import jacket
 
-var client: ClientTPtr
+var jclient: ClientTPtr
 var status: cint
 
 proc cleanup() {.noconv.} =
     echo "Cleaning up..."
 
-    if client != nil:
-        discard deactivate(client)
-        discard clientClose(client)
-        client = nil
+    if jclient != nil:
+        discard deactivate(jclient)
+        discard clientClose(jclient)
+        jclient = nil
 
     quit 0
 
 proc portConnected(portA: PortIdT; portB: PortIdT; connect: cint; arg: pointer) {.cdecl.} =
-    let portAPtr = portById(client, portA)
-    let portBPtr = portById(client, portB)
+    let portAPtr = portById(jclient, portA)
+    let portBPtr = portById(jclient, portB)
     
     if portAPtr != nil:
-        let portAName = portName(portAPtr)
-        echo fmt"Port A: {portAName}"
+        echo "Port A: " & $portName(portAPtr)
     else:
         echo "Port A: <unknown>"
 
     if portAPtr != nil:
-        let portBName = portName(portBPtr)
-        echo fmt"Port B: {portBName}"
+        echo "Port B: " & $portName(portBPtr)
     else:
         echo "Port B: <unknown>"
         
-    let action = if connect > 0: "connect" else: "disconnect"
-    echo fmt"Action: {action}"
+    echo "Action: " & (if connect > 0: "connect" else: "disconnect")
     
 
-client = clientOpen("jacket_port_register", ord(NoStartServer) or ord(UseExactName), addr status)
+jclient = clientOpen("jacket_port_register", NoStartServer.ord, addr status)
 
-echo fmt"Server status: {status}"
+echo "Server status: " & $status
 
-if client == nil:
+if jclient == nil:
     echo getJackStatusErrorString(status)
     quit 1
 
-discard portRegister(client, "in_1", JACK_DEFAULT_AUDIO_TYPE, ord(PortIsInput), 0)
-discard portRegister(client, "out_1", JACK_DEFAULT_AUDIO_TYPE, ord(PortIsOutput), 0)
+discard portRegister(jclient, "in_1", JACK_DEFAULT_AUDIO_TYPE, PortIsInput.ord, 0)
+discard portRegister(jclient, "out_1", JACK_DEFAULT_AUDIO_TYPE, PortIsOutput.ord, 0)
 
-if setPortConnectCallback(client, portConnected, nil) != 0:
+if setPortConnectCallback(jclient, portConnected, nil) != 0:
     echo "Error: could not set port connection callback."
 
-discard activate(client)
+discard activate(jclient)
 
 while true:
     sleep(50)

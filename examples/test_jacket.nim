@@ -1,32 +1,30 @@
-import std/strformat
-
 import jacket
 
-var client: ClientTPtr
+var jclient: ClientTPtr
 var time: TimeT
 var status: cint
 
-client = clientOpen("test_jacket", ord(NullOption), addr status)
+jclient = clientOpen("test_jacket", NullOption.ord, addr status)
 
-echo fmt"Server status: {status}"
+echo "Server status: " & $status
 
-if client == nil:
+if jclient == nil:
     echo getJackStatusErrorString(status)
     quit 1
 
 time = getTime()
-var ver = getVersionString()
-echo fmt"JACK version: {ver}"
-var rate = getSampleRate(client)
-echo fmt"Sample rate: {rate}"
-var bufsize = getBufferSize(client)
-echo fmt"Buffer size: {bufsize}"
-var load = cpuLoad(client)
-echo fmt"DSP load: {load}%"
-echo fmt"Server time: {time}"
-var name = getClientName(client)
-echo fmt"Client name: {name}"
-var rt = if isRealtime(client) > 0: "yes" else: "no"
-echo fmt"RT enabled: {rt}"
+let ver = getVersionString()
+echo "JACK version: " & $ver
+let rate = getSampleRate(jclient)
+echo "Sample rate: " & $rate
+let bufsize = getBufferSize(jclient)
+echo "Buffer size: " & $bufsize
+let load = cpuLoad(jclient)
+echo "DSP load: " & $load & "%"
+echo "Server time: " & $time
+let name = getClientName(jclient)
+echo "Client name: " & $name
+let rt = if isRealtime(jclient) > 0: "yes" else: "no"
+echo "RT enabled: " & rt
 
-discard clientClose(client)
+discard clientClose(jclient)
