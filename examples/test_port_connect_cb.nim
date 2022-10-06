@@ -39,6 +39,8 @@ if jclient == nil:
     echo getJackStatusErrorString(status)
     quit 1
 
+setControlCHook(cleanup)
+
 discard portRegister(jclient, "in_1", JACK_DEFAULT_AUDIO_TYPE, PortIsInput.ord, 0)
 discard portRegister(jclient, "out_1", JACK_DEFAULT_AUDIO_TYPE, PortIsOutput.ord, 0)
 
