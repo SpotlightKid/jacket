@@ -38,9 +38,9 @@ type
     PortTypeIdT* = culong
 
 type
-    ClientT = object
+    ClientT = distinct object
     ClientTPtr* = ptr ClientT
-    PortT = object
+    PortT = distinct object
     PortTPtr* = ptr PortT
 
 
