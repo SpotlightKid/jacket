@@ -1,27 +1,22 @@
 # jacket.nim
 
 
-# Possible names/install locations of libjack, according to
+# Possible names/install locations of libjack, according to:
 # https://github.com/x42/weakjack/blob/master/weak_libjack.c#L108
-# 
-# MacOS:
-# * /usr/local/lib/libjack.dylib
-# * /opt/homebrew/lib/libjack.dylib
-# * /opt/local/lib/libjack.dylib
-# Win:
-# * libjack64.dll
-# * libjack.dll
-# Unix:
-# * libjack.so.0
 proc getJackLibName: string =
     when system.hostOS == "windows":
-        result = "libjack.dll"
+        when sizeof(int) == 4:
+            result = "libjack.dll"
+        else:
+            result = "libjack64.dll"
     elif system.hostOS == "macosx":
-        result = "libjack.dylib"
+        result = "(|/usr/local/lib/|/opt/homebrew/lib/|/opt/local/lib/)libjack.dylib"
     else:
         result = "libjack.so.0"
   
 {.push dynlib: getJackLibName().}
+# ------------------------------ Constants --------------------------------
+
 const
     JACK_MAX_FRAMES* = (4294967295'i64)
     JACK_LOAD_INIT_LIMIT* = 1024
@@ -42,7 +37,6 @@ type
     ClientTPtr* = ptr ClientT
     PortT = distinct object
     PortTPtr* = ptr PortT
-
 
 type
     JackOptions* {.size: sizeof(cint) pure.} = enum
@@ -454,6 +448,8 @@ proc setErrorFunction*(errorCallback: JackErrorCallback) {.importc: "jack_set_er
 proc setInfoFunction*(infoCallback: JackInfoCallback) {.importc: "jack_set_info_function".}
 
 {.pop.}
+
+# --------------------------- Helper functions ----------------------------
 
 proc getJackStatusErrorString*(status: cint): string =
     # Get JACK error status as string.
