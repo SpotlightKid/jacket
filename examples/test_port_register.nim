@@ -1,31 +1,37 @@
-import std/os
+import std/[logging, os]
 import jacket
 
 var jclient: ClientTPtr
 var status: cint
+var log = newConsoleLogger(lvlInfo)
+
+proc errorCb(msg: cstring) {.cdecl.} =
+    # Suppress verbose JACK error messages when server is not available by
+    # default. Pass ``lvlAll`` when creating the logger to enable them.
+    debug "JACK error: " & $msg
 
 proc cleanup() {.noconv.} =
-    echo "Cleaning up..."
+    debug "Cleaning up..."
     
     if jclient != nil:
-        discard clientClose(jclient)
+        discard jclient.clientClose
         jclient = nil
     
-    quit 0
+    quit QuitSuccess
 
-
-jclient = clientOpen("jacket_port_register", NoStartServer.ord or UseExactName.ord, addr status)
-
-echo "Server status: " & $status
+addHandler(log)
+setErrorFunction(errorCb)
+jclient = clientOpen("jacket_port_register", NoStartServer.ord or UseExactName.ord, status.addr)
+debug "Server status: " & $status
 
 if jclient == nil:
-    echo getJackStatusErrorString(status)
+    error getJackStatusErrorString(status)
     quit 1
 
 setControlCHook(cleanup)
 
-discard portRegister(jclient, "in_1", JACK_DEFAULT_AUDIO_TYPE, PortIsInput.ord, 0)
-discard portRegister(jclient, "out_1", JACK_DEFAULT_AUDIO_TYPE, PortIsOutput.ord, 0)
+discard jclient.portRegister("in_1", JACK_DEFAULT_AUDIO_TYPE, PortIsInput.ord, 0)
+discard jclient.portRegister("out_1", JACK_DEFAULT_AUDIO_TYPE, PortIsOutput.ord, 0)
 
 while true:
     sleep(50)
