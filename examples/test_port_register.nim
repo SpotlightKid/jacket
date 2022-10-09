@@ -32,7 +32,7 @@ if jclient == nil:
 when defined(windows):
     setSignalProc(cleanup, SIGABRT, SIGINT, SIGTERM)
 else:
-    setSignalProc(cleanup, SIGHUP, SIGINT, SIGQUIT, SIGTERM)
+    setSignalProc(cleanup, SIGABRT, SIGHUP, SIGINT, SIGQUIT, SIGTERM)
 
 discard jclient.portRegister("in_1", JACK_DEFAULT_AUDIO_TYPE, PortIsInput.ord, 0)
 discard jclient.portRegister("out_1", JACK_DEFAULT_AUDIO_TYPE, PortIsOutput.ord, 0)

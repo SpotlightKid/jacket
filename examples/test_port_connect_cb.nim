@@ -11,7 +11,7 @@ proc errorCb(msg: cstring) {.cdecl.} =
     # default. Pass ``lvlAll`` when creating the logger to enable them.
     debug "JACK error: " & $msg
 
-proc cleanup(sig: cint) {.noconv.} =
+proc cleanup(sig: cint = 0) {.noconv.} =
     debug "Cleaning up..."
 
     if jclient != nil:
@@ -62,4 +62,4 @@ if jclient.activate() == 0:
     while true:
         sleep(50)
 
-cleanup()
+cleanup() # normally not reached
