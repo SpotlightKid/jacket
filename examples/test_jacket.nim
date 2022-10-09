@@ -3,7 +3,7 @@ import jacket
 
 var jclient: ClientTPtr
 var status: cint
-var log = newConsoleLogger(lvlInfo)
+var log = newConsoleLogger(when defined(release): lvlInfo else: lvlDebug)
 
 proc errorCb(msg: cstring) {.cdecl.} =
     # Suppress verbose JACK error messges when server is not available by 
