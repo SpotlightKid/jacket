@@ -3,7 +3,7 @@ import signal
 import jacket
 
 var jclient: ClientTPtr
-var out1: PortTPtr
+var outPort: PortTPtr
 var status: cint
 var log = newConsoleLogger(when defined(release): lvlInfo else: lvlDebug)
 
@@ -56,11 +56,11 @@ proc cleanup(sig: cint = 0) {.noconv.} =
     quit QuitSuccess
 
 proc shutdownCb(arg: pointer = nil) {.cdecl.} =
-    debug "Server has shut down"
+    debug "JACK server has shut down"
     cleanup()
 
-proc process(nFrames: NFramesT, arg: pointer): cint {.cdecl.} = 
-    var outbuf = cast[JackBufferPtr](portGetBuffer(out1, nFrames))
+proc processCb(nFrames: NFramesT, arg: pointer): cint {.cdecl.} = 
+    var outbuf = cast[JackBufferPtr](portGetBuffer(outPort, nFrames))
     let osc = cast[SineOscPtr](arg)
 
     for i in 0 ..< nFrames:
@@ -70,34 +70,39 @@ proc process(nFrames: NFramesT, arg: pointer): cint {.cdecl.} =
 
 addHandler(log)
 
-# create JACK client
+# Create JACK client
 setErrorFunction(errorCb)
-jclient = clientOpen("jacket_port_register", NoStartServer.ord or UseExactName.ord, status.addr)
-debug "Server status: " & $status
+jclient = clientOpen("jacket_sine", NoStartServer.ord or UseExactName.ord, status.addr)
+debug "JACK server status: " & $status
 
 if jclient == nil:
     error getJackStatusErrorString(status)
     quit 1
 
+# Create sine oscillator
 let sampleRate =(float) jclient.getSampleRate()
+debug "JACK sample rate: " & $sampleRate
 var osc = initSineOsc(sampleRate, sineFreq)
 
-
+# Set up signal handlers to clean up on exit
 when defined(windows):
     setSignalProc(cleanup, SIGABRT, SIGINT, SIGTERM)
 else:
     setSignalProc(cleanup, SIGABRT, SIGHUP, SIGINT, SIGQUIT, SIGTERM)
 
-if jclient.setProcessCallback(process, osc.addr) != 0:
-    error "Could not set process callback function."
+# Register JACK callbacks
+if jclient.setProcessCallback(processCb, osc.addr) != 0:
+    error "Could not set JACK process callback function."
     cleanup()
 
 jclient.onShutdown(shutdownCb, nil)
 
-out1 = jclient.portRegister("out_1", JACK_DEFAULT_AUDIO_TYPE, PortIsOutput.ord, 0)
+# Create output port
+outPort = jclient.portRegister("out_1", JACK_DEFAULT_AUDIO_TYPE, PortIsOutput.ord, 0)
 
+# Activate JACK client ...
 if jclient.activate() == 0:
-    #  keep running until the Ctrl+C
+    # ... and keep running until a signal is received
     while true:
         sleep(50)
 
