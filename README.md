@@ -19,7 +19,7 @@ registering ports and setting up all the callbacks necessary for a well-behaved
 JACK application.
 
 
-# Installation
+## Installation
 
 * Clone this repository.
 * Change into the `jacket` directory.
