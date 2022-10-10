@@ -42,7 +42,6 @@ proc portConnected(portA: PortIdT; portB: PortIdT; connect: cint; arg: pointer) 
         echo "Port B: <unknown>"
         
     echo("Action: ", if connect > 0: "connect" else: "disconnect")
-    
 
 addHandler(log)
 setErrorFunction(errorCb)

@@ -79,10 +79,10 @@ debug "JACK server status: " & $status
 
 if jclient == nil:
     error getJackStatusErrorString(status)
-    quit 1
+    quit QuitFailure
 
 # Create sine oscillator
-let sampleRate =(float) jclient.getSampleRate()
+let sampleRate = jclient.getSampleRate.float
 debug "JACK sample rate: " & $sampleRate
 var osc = initSineOsc(sampleRate, sineFreq)
 
@@ -96,6 +96,7 @@ else:
 if jclient.setProcessCallback(processCb, osc.addr) != 0:
     error "Could not set JACK process callback function."
     cleanup()
+    quit QuitFailure
 
 jclient.onShutdown(shutdownCb, nil)
 

@@ -33,7 +33,7 @@ debug "JACK server status: " & $status
 
 if jclient == nil:
     error getJackStatusErrorString(status)
-    quit 1
+    quit QuitFailure
 
 when defined(windows):
     setSignalProc(signalCb, SIGABRT, SIGINT, SIGTERM)
