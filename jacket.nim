@@ -27,10 +27,11 @@ const
 
 type
     TimeT* = culonglong
-    NframesT* = culong
+    NFramesT* = culong
     UuidT* = culonglong
     PortIdT* = culong
     PortTypeIdT* = culong
+    DefaultAudioSampleT* = cfloat
 
 type
     ClientT = distinct object
@@ -80,13 +81,13 @@ type
 
 # Callback function types
 type
-    JackProcessCallback* = proc (nframes: NframesT; arg: pointer): cint {.cdecl.}
+    JackProcessCallback* = proc (nframes: NFramesT; arg: pointer): cint {.cdecl.}
     JackThreadCallback* = proc (arg: pointer): pointer {.cdecl.}
     JackThreadInitCallback* = proc (arg: pointer) {.cdecl.}
     JackGraphOrderCallback* = proc (arg: pointer): cint {.cdecl.}
     JackXRunCallback* = proc (arg: pointer): cint {.cdecl.}
-    JackBufferSizeCallback* = proc (nframes: NframesT; arg: pointer): cint {.cdecl.}
-    JackSampleRateCallback* = proc (nframes: NframesT; arg: pointer): cint {.cdecl.}
+    JackBufferSizeCallback* = proc (nframes: NFramesT; arg: pointer): cint {.cdecl.}
+    JackSampleRateCallback* = proc (nframes: NFramesT; arg: pointer): cint {.cdecl.}
     JackPortRegistrationCallback* = proc (port: PortIdT; flag: cint; arg: pointer) {.cdecl.}
     JackClientRegistrationCallback* = proc (name: cstring; flag: cint; arg: pointer) {.cdecl.}
     JackPortConnectCallback* = proc (portA: PortIdT; portB: PortIdT; connect: cint; arg: pointer) {.cdecl.}
@@ -169,11 +170,11 @@ proc getClientPid*(name: cstring): cint {.importc: "jack_get_client_pid".}
 proc isRealtime*(client: ClientTPtr): cint {.importc: "jack_is_realtime".}
 
 # DEPRECATED
-# proc threadWait*(client: ClientTPtr; status: cint): NframesT {.
+# proc threadWait*(client: ClientTPtr; status: cint): NFramesT {.
 #     importc: "jack_thread_wait".}
 
 # jack_nframes_t jack_cycle_wait (jack_client_t* client) ;
-proc cycleWait*(client: ClientTPtr): NframesT {.importc: "jack_cycle_wait".}
+proc cycleWait*(client: ClientTPtr): NFramesT {.importc: "jack_cycle_wait".}
 
 # void jack_cycle_signal (jack_client_t* client, int status) ;
 proc cycleSignal*(client: ClientTPtr; status: cint) {.importc: "jack_cycle_signal".}
@@ -235,13 +236,13 @@ proc setLatencyCallback*(client: ClientTPtr; latencyCallback: JackLatencyCallbac
 proc setFreewheel*(client: ClientTPtr; onoff: cint): cint {.importc: "jack_set_freewheel".}
 
 # int jack_set_buffer_size (jack_client_t *client, jack_nframes_t nframes) ;
-proc setBufferSize*(client: ClientTPtr; nframes: NframesT): cint {.importc: "jack_set_buffer_size".}
+proc setBufferSize*(client: ClientTPtr; nframes: NFramesT): cint {.importc: "jack_set_buffer_size".}
 
 #jack_nframes_t jack_get_sample_rate (jack_client_t *) ;
-proc getSampleRate*(client: ClientTPtr): NframesT {.importc: "jack_get_sample_rate".}
+proc getSampleRate*(client: ClientTPtr): NFramesT {.importc: "jack_get_sample_rate".}
 
 # jack_nframes_t jack_get_buffer_size (jack_client_t *) ;
-proc getBufferSize*(client: ClientTPtr): NframesT {.importc: "jack_get_buffer_size".}
+proc getBufferSize*(client: ClientTPtr): NFramesT {.importc: "jack_get_buffer_size".}
 
 # DEPRECATED
 # proc engineTakeoverTimebase*(a1: ClientTPtr): cint {.
@@ -265,7 +266,7 @@ proc portRegister*(client: ClientTPtr; portName: cstring; portType: cstring;
 proc portUnregister*(client: ClientTPtr; port: PortTPtr): cint {.importc: "jack_port_unregister".}
 
 # void * jack_port_get_buffer (jack_port_t *port, jack_nframes_t) ;
-proc portGetBuffer*(port: PortTPtr; nframes: NframesT): pointer {.importc: "jack_port_get_buffer".}
+proc portGetBuffer*(port: PortTPtr; nframes: NFramesT): pointer {.importc: "jack_port_get_buffer".}
 
 # jack_uuid_t jack_port_uuid (const jack_port_t *port) ;
 proc portUuid*(port: PortTPtr): UuidT {.importc: "jack_port_uuid".}
@@ -374,7 +375,7 @@ proc portTypeGetBufferSize*(client: ClientTPtr; portType: cstring): csize_t {.
 
 #[ FIXME: not implemented yet
 # void jack_port_set_latency (jack_port_t *port, jack_nframes_t) ;
-proc portSetLatency*(port: PortTPtr; a2: NframesT) {.importc: "jack_port_set_latency".}
+proc portSetLatency*(port: PortTPtr; a2: NFramesT) {.importc: "jack_port_set_latency".}
 
 #[ FIXME: not implemented yet
 # void jack_port_get_latency_range (jack_port_t *port, jack_latency_callback_mode_t mode, jack_latency_range_t *range) ;
@@ -387,9 +388,9 @@ proc portSetLatencyRange*(port: PortTPtr; mode: LatencyCallbackModeT;
 
 proc recomputeTotalLatencies*(client: ClientTPtr): cint {.importc: "jack_recompute_total_latencies".}
 
-proc portGetLatency*(port: PortTPtr): NframesT {.importc: "jack_port_get_latency".}
+proc portGetLatency*(port: PortTPtr): NFramesT {.importc: "jack_port_get_latency".}
 
-proc portGetTotalLatency*(client: ClientTPtr; port: PortTPtr): NframesT {.importc: "jack_port_get_total_latency".}
+proc portGetTotalLatency*(client: ClientTPtr; port: PortTPtr): NFramesT {.importc: "jack_port_get_total_latency".}
 
 proc recomputeTotalLatency*(a1: ClientTPtr; port: PortTPtr): cint {.importc: "jack_recompute_total_latency".}
 ]#
@@ -415,28 +416,28 @@ proc portById*(client: ClientTPtr; portId: PortIdT): PortTPtr {.importc: "jack_p
 # ----------------------------- Time handling -----------------------------
 
 # jack_nframes_t jack_frames_since_cycle_start (const jack_client_t *) ;
-proc framesSinceCycleStart*(client: ClientTPtr): NframesT {.importc: "jack_frames_since_cycle_start".}
+proc framesSinceCycleStart*(client: ClientTPtr): NFramesT {.importc: "jack_frames_since_cycle_start".}
 
 # jack_nframes_t jack_frame_time (const jack_client_t *) ;
-proc frameTime*(client: ClientTPtr): NframesT {.importc: "jack_frame_time".}
+proc frameTime*(client: ClientTPtr): NFramesT {.importc: "jack_frame_time".}
 
 # jack_nframes_t jack_last_frame_time (const jack_client_t *client) ;
-proc lastFrameTime*(client: ClientTPtr): NframesT {.importc: "jack_last_frame_time".}
+proc lastFrameTime*(client: ClientTPtr): NFramesT {.importc: "jack_last_frame_time".}
 
 # int jack_get_cycle_times(const jack_client_t *client,
 #                         jack_nframes_t *current_frames,
 #                         jack_time_t    *current_usecs,
 #                         jack_time_t    *next_usecs,
 #                         float          *period_usecs) ;
-proc getCycleTimes*(client: ClientTPtr; currentFrames: ptr NframesT;
+proc getCycleTimes*(client: ClientTPtr; currentFrames: ptr NFramesT;
                     currentUsecs: ptr TimeT; nextUsecs: ptr TimeT;
                     periodUsecs: ptr cfloat): cint {.importc: "jack_get_cycle_times".}
 
 # jack_time_t jack_frames_to_time(const jack_client_t *client, jack_nframes_t) ;
-proc framesToTime*(client: ClientTPtr; nframes: NframesT): TimeT {.importc: "jack_frames_to_time".}
+proc framesToTime*(client: ClientTPtr; nframes: NFramesT): TimeT {.importc: "jack_frames_to_time".}
 
 # jack_nframes_t jack_time_to_frames(const jack_client_t *client, jack_time_t) ;
-proc timeToFrames*(client: ClientTPtr; time: TimeT): NframesT {.importc: "jack_time_to_frames".}
+proc timeToFrames*(client: ClientTPtr; time: TimeT): NFramesT {.importc: "jack_time_to_frames".}
 
 # jack_time_t jack_get_time(void) ;
 proc getTime*(): TimeT {.importc: "jack_get_time".}
