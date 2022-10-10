@@ -14,9 +14,9 @@ before the first public release.
 
 Also, I plan to add a higher-level abstraction on top of the direct mapping
 from Nim procs and types to C functions and types, probably in the form of
-a JACk client object, which takes care of a JACK client instance, registering
-ports and setting up all the callbacks necessary for a well-behaved JACK 
-application.
+a JACK client object, which takes care of creating a JACK client instance,
+registering ports and setting up all the callbacks necessary for a well-behaved
+JACK application.
 
 
 # Installation
