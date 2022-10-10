@@ -4,40 +4,48 @@ import jacket
 
 var jclient: ClientTPtr
 var status: cint
+var exitSignalled: bool = false
 var log = newConsoleLogger(when defined(release): lvlInfo else: lvlDebug)
+
+proc cleanup(sig: cint = 0) =
+    debug "Cleaning up..."
+    if jclient != nil:
+        discard jclient.clientClose()
+        jclient = nil
 
 proc errorCb(msg: cstring) {.cdecl.} =
     # Suppress verbose JACK error messages when server is not available by
     # default. Pass ``lvlAll`` when creating the logger to enable them.
     debug "JACK error: " & $msg
 
-proc cleanup(sig: cint = 0) {.noconv.} =
-    debug "Cleaning up..."
-    
-    if jclient != nil:
-        discard jclient.clientClose
-        jclient = nil
+proc signalCb(sig: cint) {.noconv.} =
+    info "Received signal: " & $sig
+    exitSignalled = true
 
-    quit QuitSuccess
+proc shutdownCb(arg: pointer = nil) {.cdecl.} =
+    info "JACK server has shut down."
+    exitSignalled = true
 
 addHandler(log)
 setErrorFunction(errorCb)
 jclient = clientOpen("jacket_port_register", NoStartServer.ord or UseExactName.ord, status.addr)
-debug "Server status: " & $status
+debug "JACK server status: " & $status
 
 if jclient == nil:
     error getJackStatusErrorString(status)
     quit 1
 
 when defined(windows):
-    setSignalProc(cleanup, SIGABRT, SIGINT, SIGTERM)
+    setSignalProc(signalCb, SIGABRT, SIGINT, SIGTERM)
 else:
-    setSignalProc(cleanup, SIGABRT, SIGHUP, SIGINT, SIGQUIT, SIGTERM)
+    setSignalProc(signalCb, SIGABRT, SIGHUP, SIGINT, SIGQUIT, SIGTERM)
 
 discard jclient.portRegister("in_1", JACK_DEFAULT_AUDIO_TYPE, PortIsInput.ord, 0)
 discard jclient.portRegister("out_1", JACK_DEFAULT_AUDIO_TYPE, PortIsOutput.ord, 0)
 
-while true:
+jclient.onShutdown(shutdownCb, nil)
+
+while not exitSignalled:
     sleep(50)
 
-cleanup() # normally not reached
+cleanup()

@@ -12,8 +12,8 @@ proc errorCb(msg: cstring) {.cdecl.} =
 
 addHandler(log)
 setErrorFunction(errorCb)
-jclient = clientOpen("test_jacket", NullOption.ord, status.addr)
-debug "Server status: " & $status
+jclient = clientOpen("jacket_info", NullOption.ord, status.addr)
+debug "JACK server status: " & $status
 
 if jclient == nil:
     error getJackStatusErrorString(status)

@@ -4,22 +4,28 @@ import signal
 
 var jclient: ClientTPtr
 var status: cint
+var exitSignalled: bool = false
 var log = newConsoleLogger(when defined(release): lvlInfo else: lvlDebug)
+
+proc cleanup(sig: cint = 0) =
+    debug "Cleaning up..."
+    if jclient != nil:
+        discard jclient.deactivate()
+        discard jclient.clientClose()
+        jclient = nil
 
 proc errorCb(msg: cstring) {.cdecl.} =
     # Suppress verbose JACK error messages when server is not available by
     # default. Pass ``lvlAll`` when creating the logger to enable them.
     debug "JACK error: " & $msg
 
-proc cleanup(sig: cint = 0) {.noconv.} =
-    debug "Cleaning up..."
+proc signalCb(sig: cint) {.noconv.} =
+    info "Received signal: " & $sig
+    exitSignalled = true
 
-    if jclient != nil:
-        discard jclient.deactivate()
-        discard jclient.clientClose()
-        jclient = nil
-
-    quit QuitSuccess
+proc shutdownCb(arg: pointer = nil) {.cdecl.} =
+    info "JACK server has shut down."
+    exitSignalled = true
 
 proc portConnected(portA: PortIdT; portB: PortIdT; connect: cint; arg: pointer) {.cdecl.} =
     let portAPtr = jclient.portById(portA)
@@ -40,26 +46,28 @@ proc portConnected(portA: PortIdT; portB: PortIdT; connect: cint; arg: pointer) 
 
 addHandler(log)
 setErrorFunction(errorCb)
-jclient = clientOpen("jacket_port_register", NoStartServer.ord, status.addr)
-debug "Server status: " & $status
+jclient = clientOpen("jacket_port_connect_cb", NoStartServer.ord, status.addr)
+debug "JACK server status: " & $status
 
 if jclient == nil:
     error getJackStatusErrorString(status)
-    quit 1
+    quit QuitFailure
 
 when defined(windows):
-    setSignalProc(cleanup, SIGABRT, SIGINT, SIGTERM)
+    setSignalProc(signalCb, SIGABRT, SIGINT, SIGTERM)
 else:
-    setSignalProc(cleanup, SIGABRT, SIGHUP, SIGINT, SIGQUIT, SIGTERM)
+    setSignalProc(signalCb, SIGABRT, SIGHUP, SIGINT, SIGQUIT, SIGTERM)
 
 discard jclient.portRegister("in_1", JACK_DEFAULT_AUDIO_TYPE, PortIsInput.ord, 0)
 discard jclient.portRegister("out_1", JACK_DEFAULT_AUDIO_TYPE, PortIsOutput.ord, 0)
 
 if jclient.setPortConnectCallback(portConnected, nil) != 0:
-    error "Error: could not set port connection callback."
+    error "Error: could not set JACK port connection callback."
+
+jclient.onShutdown(shutdownCb, nil)
 
 if jclient.activate() == 0:
-    while true:
+    while not exitSignalled:
         sleep(50)
 
-cleanup() # normally not reached
+cleanup()
