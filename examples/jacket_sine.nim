@@ -2,15 +2,15 @@ import std/[logging, math, os]
 import signal
 import jacket
 
-var jclient: ClientTPtr
-var outPort: PortTPtr
+var jclient: ClientP
+var outPort: PortP
 var status: cint
 var exitSignalled: bool = false
 var log = newConsoleLogger(when defined(release): lvlInfo else: lvlDebug)
 
 type
-    SampleT = DefaultAudioSampleT
-    JackBufferPtr = ptr UncheckedArray[SampleT]
+    Sample = DefaultAudioSample
+    JackBufferP = ptr UncheckedArray[Sample]
 const
     tableSize = 4096
     sineFreq = 440.0
@@ -21,7 +21,7 @@ type
         waveform: array[0..tableSize, float]
         phase: float
         idxInc: float
-    SineOscPtr = ref SineOsc
+    SineOscP = ref SineOsc
 
 proc initSineOsc(sr: float, freq: float): SineOsc =
     let phsInc = twoPi / tableSize
@@ -34,7 +34,7 @@ proc initSineOsc(sr: float, freq: float): SineOsc =
     result.phase = 0.0
     result.idxInc = tableSize / sr * freq
 
-proc tick(osc: SineOscPtr): float =
+proc tick(osc: SineOscP): float =
     result = osc.waveform[int(osc.phase)]
     osc.phase += osc.idxInc;
     
@@ -61,9 +61,9 @@ proc shutdownCb(arg: pointer = nil) {.cdecl.} =
     info "JACK server has shut down."
     exitSignalled = true
 
-proc processCb(nFrames: NFramesT, arg: pointer): cint {.cdecl.} = 
-    var outbuf = cast[JackBufferPtr](portGetBuffer(outPort, nFrames))
-    let osc = cast[SineOscPtr](arg)
+proc processCb(nFrames: NFrames, arg: pointer): cint {.cdecl.} = 
+    var outbuf = cast[JackBufferP](portGetBuffer(outPort, nFrames))
+    let osc = cast[SineOscP](arg)
 
     for i in 0 ..< nFrames:
         outbuf[i] = osc.tick() * 0.2

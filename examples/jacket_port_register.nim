@@ -2,7 +2,7 @@ import std/[logging, os]
 import signal
 import jacket
 
-var jclient: ClientTPtr
+var jclient: ClientP
 var status: cint
 var exitSignalled: bool = false
 var log = newConsoleLogger(when defined(release): lvlInfo else: lvlDebug)

@@ -1,7 +1,7 @@
 import std/logging
 import jacket
 
-var jclient: ClientTPtr
+var jclient: ClientP
 var status: cint
 var log = newConsoleLogger(when defined(release): lvlInfo else: lvlDebug)
 

@@ -2,7 +2,7 @@ import std/[logging, os]
 import jacket
 import signal
 
-var jclient: ClientTPtr
+var jclient: ClientP
 var status: cint
 var exitSignalled: bool = false
 var log = newConsoleLogger(when defined(release): lvlInfo else: lvlDebug)
@@ -27,7 +27,7 @@ proc shutdownCb(arg: pointer = nil) {.cdecl.} =
     info "JACK server has shut down."
     exitSignalled = true
 
-proc portConnected(portA: PortIdT; portB: PortIdT; connect: cint; arg: pointer) {.cdecl.} =
+proc portConnected(portA: PortId; portB: PortId; connect: cint; arg: pointer) {.cdecl.} =
     let portAPtr = jclient.portById(portA)
     let portBPtr = jclient.portById(portB)
     

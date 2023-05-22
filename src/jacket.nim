@@ -27,18 +27,18 @@ const
 # ----------------------------- Custom Types ------------------------------
 
 type
-    TimeT* = culonglong
-    NFramesT* = culong
-    UuidT* = culonglong
-    PortIdT* = culong
-    PortTypeIdT* = culong
-    DefaultAudioSampleT* = cfloat
+    Time* = culonglong
+    NFrames* = culong
+    Uuid* = culonglong
+    PortId* = culong
+    PortTypeId* = culong
+    DefaultAudioSample* = cfloat
 
 type
-    ClientT = distinct object
-    ClientTPtr* = ptr ClientT
-    PortT = distinct object
-    PortTPtr* = ptr PortT
+    Client = distinct object
+    ClientP* = ptr Client
+    Port = distinct object
+    PortP* = ptr Port
 
 type
     JackOptions* {.size: sizeof(cint) pure.} = enum
@@ -82,17 +82,17 @@ type
 
 # Callback function types
 type
-    JackProcessCallback* = proc (nframes: NFramesT; arg: pointer): cint {.cdecl.}
+    JackProcessCallback* = proc (nframes: NFrames; arg: pointer): cint {.cdecl.}
     JackThreadCallback* = proc (arg: pointer): pointer {.cdecl.}
     JackThreadInitCallback* = proc (arg: pointer) {.cdecl.}
     JackGraphOrderCallback* = proc (arg: pointer): cint {.cdecl.}
     JackXRunCallback* = proc (arg: pointer): cint {.cdecl.}
-    JackBufferSizeCallback* = proc (nframes: NFramesT; arg: pointer): cint {.cdecl.}
-    JackSampleRateCallback* = proc (nframes: NFramesT; arg: pointer): cint {.cdecl.}
-    JackPortRegistrationCallback* = proc (port: PortIdT; flag: cint; arg: pointer) {.cdecl.}
+    JackBufferSizeCallback* = proc (nframes: NFrames; arg: pointer): cint {.cdecl.}
+    JackSampleRateCallback* = proc (nframes: NFrames; arg: pointer): cint {.cdecl.}
+    JackPortRegistrationCallback* = proc (port: PortId; flag: cint; arg: pointer) {.cdecl.}
     JackClientRegistrationCallback* = proc (name: cstring; flag: cint; arg: pointer) {.cdecl.}
-    JackPortConnectCallback* = proc (portA: PortIdT; portB: PortIdT; connect: cint; arg: pointer) {.cdecl.}
-    JackPortRenameCallback* = proc (port: PortIdT; oldName: cstring; newName: cstring; arg: pointer) {.cdecl.}
+    JackPortConnectCallback* = proc (portA: PortId; portB: PortId; connect: cint; arg: pointer) {.cdecl.}
+    JackPortRenameCallback* = proc (port: PortId; oldName: cstring; newName: cstring; arg: pointer) {.cdecl.}
     JackFreewheelCallback* = proc (starting: cint; arg: pointer) {.cdecl.}
     JackShutdownCallback* = proc (arg: pointer) {.cdecl.}
     JackInfoShutdownCallback* = proc (code: JackStatus; reason: cstring; arg: pointer) {.cdecl.}
@@ -121,29 +121,29 @@ proc free*(`ptr`: pointer) {.importc: "jack_free".}
 # jack_client_t * jack_client_open (char *client_name,
 #                                   jack_options_t options,
 #                                   jack_status_t *status, ...) ;
-proc clientOpen*(clientName: cstring; options: cint; status: ptr cint): ClientTPtr {.
+proc clientOpen*(clientName: cstring; options: cint; status: ptr cint): ClientP {.
     varargs, importc: "jack_client_open".}
 
 # DEPRECATED
-# proc clientNew*(clientName: cstring): ClientTPtr {.importc: "jack_client_new".}
+# proc clientNew*(clientName: cstring): ClientP {.importc: "jack_client_new".}
 
 # int jack_client_close (jack_client_t *client) ;
-proc clientClose*(client: ClientTPtr): cint {.importc: "jack_client_close"}
+proc clientClose*(client: ClientP): cint {.importc: "jack_client_close"}
 
 # int jack_client_name_size (void) ;
 proc clientNameSize*(): cint {.importc: "jack_client_name_size"}
 
 # char * jack_get_client_name (jack_client_t *client) ;
-proc getClientName*(client: ClientTPtr): cstring {.importc: "jack_get_client_name".}
+proc getClientName*(client: ClientP): cstring {.importc: "jack_get_client_name".}
 
 # char *jack_get_uuid_for_client_name (jack_client_t *client,
 #                                      const char    *client_name) ;
-proc getUuidForClientName*(client: ClientTPtr; clientName: cstring): cstring {.
+proc getUuidForClientName*(client: ClientP; clientName: cstring): cstring {.
     importc: "jack_get_uuid_for_client_name".}
 
 # char *jack_get_client_name_by_uuid (jack_client_t *client,
 #                                     const char    *client_uuid ) ;
-proc getClientNameByUuid*(client: ClientTPtr; clientUuid: cstring): cstring {.
+proc getClientNameByUuid*(client: ClientP; clientUuid: cstring): cstring {.
     importc: "jack_get_client_name_by_uuid".}
 
 #[ FIXME: not implemented yet
@@ -154,103 +154,103 @@ proc internalClientClose*(clientName: cstring) {.importc: "jack_internal_client_
 ]#
 
 # int jack_activate (jack_client_t *client) ;
-proc activate*(client: ClientTPtr): cint {.importc: "jack_activate".}
+proc activate*(client: ClientP): cint {.importc: "jack_activate".}
 
 # int jack_deactivate (jack_client_t *client) ;
-proc deactivate*(client: ClientTPtr): cint {.importc: "jack_deactivate".}
+proc deactivate*(client: ClientP): cint {.importc: "jack_deactivate".}
 
 # int jack_get_client_pid (const char *name) ;
 proc getClientPid*(name: cstring): cint {.importc: "jack_get_client_pid".}
 
 # FIXME: not implemented yet
 # jack_native_thread_t jack_client_thread_id (jack_client_t *client) ;
-# proc clientThreadId*(client: ClientTPtr): NativeThreadT {.
+# proc clientThreadId*(client: ClientP): NativeThread {.
 #    importc: "jack_client_thread_id".}
 
 # int jack_is_realtime (jack_client_t *client) ;
-proc isRealtime*(client: ClientTPtr): cint {.importc: "jack_is_realtime".}
+proc isRealtime*(client: ClientP): cint {.importc: "jack_is_realtime".}
 
 # DEPRECATED
-# proc threadWait*(client: ClientTPtr; status: cint): NFramesT {.
+# proc threadWait*(client: ClientP; status: cint): NFrames {.
 #     importc: "jack_thread_wait".}
 
 # jack_nframes_t jack_cycle_wait (jack_client_t* client) ;
-proc cycleWait*(client: ClientTPtr): NFramesT {.importc: "jack_cycle_wait".}
+proc cycleWait*(client: ClientP): NFrames {.importc: "jack_cycle_wait".}
 
 # void jack_cycle_signal (jack_client_t* client, int status) ;
-proc cycleSignal*(client: ClientTPtr; status: cint) {.importc: "jack_cycle_signal".}
+proc cycleSignal*(client: ClientP; status: cint) {.importc: "jack_cycle_signal".}
 
 
 # ------------------------------- Callbacks -------------------------------
 
-proc setProcessThread*(client: ClientTPtr; threadCallback: JackThreadCallback; arg: pointer): cint {.
+proc setProcessThread*(client: ClientP; threadCallback: JackThreadCallback; arg: pointer): cint {.
     importc: "jack_set_process_thread".}
 
-proc setThreadInitCallback*(client: ClientTPtr; threadInitCallback: JackThreadInitCallback; arg: pointer): cint {.
+proc setThreadInitCallback*(client: ClientP; threadInitCallback: JackThreadInitCallback; arg: pointer): cint {.
     importc: "jack_set_thread_init_callback".}
 
-proc onShutdown*(client: ClientTPtr; shutdownCallback: JackShutdownCallback; arg: pointer) {.
+proc onShutdown*(client: ClientP; shutdownCallback: JackShutdownCallback; arg: pointer) {.
     importc: "jack_on_shutdown".}
 
-proc onInfoShutdown*(client: ClientTPtr; shutdownCallback: JackInfoShutdownCallback; arg: pointer) {.
+proc onInfoShutdown*(client: ClientP; shutdownCallback: JackInfoShutdownCallback; arg: pointer) {.
     importc: "jack_on_info_shutdown".}
 
-proc setProcessCallback*(client: ClientTPtr; processCallback: JackProcessCallback; arg: pointer): cint {.
+proc setProcessCallback*(client: ClientP; processCallback: JackProcessCallback; arg: pointer): cint {.
     importc: "jack_set_process_callback".}
 
-proc setFreewheelCallback*(client: ClientTPtr; freewheelCallback: JackFreewheelCallback; arg: pointer): cint {.
+proc setFreewheelCallback*(client: ClientP; freewheelCallback: JackFreewheelCallback; arg: pointer): cint {.
     importc: "jack_set_freewheel_callback".}
 
-proc setBufferSizeCallback*(client: ClientTPtr; bufsizeCallback: JackBufferSizeCallback; arg: pointer): cint {.
+proc setBufferSizeCallback*(client: ClientP; bufsizeCallback: JackBufferSizeCallback; arg: pointer): cint {.
     importc: "jack_set_buffer_size_callback".}
 
-proc setSampleRateCallback*(client: ClientTPtr; srateCallback: JackSampleRateCallback; arg: pointer): cint {.
+proc setSampleRateCallback*(client: ClientP; srateCallback: JackSampleRateCallback; arg: pointer): cint {.
     importc: "jack_set_sample_rate_callback".}
 
-proc setClientRegistrationCallback*(client: ClientTPtr; registrationCallback: JackClientRegistrationCallback;
+proc setClientRegistrationCallback*(client: ClientP; registrationCallback: JackClientRegistrationCallback;
                                     arg: pointer): cint {.
     importc: "jack_set_client_registration_callback".}
 
-proc setPortRegistrationCallback*(client: ClientTPtr; registrationCallback: JackPortRegistrationCallback;
+proc setPortRegistrationCallback*(client: ClientP; registrationCallback: JackPortRegistrationCallback;
                                   arg: pointer): cint {.
     importc: "jack_set_port_registration_callback".}
 
-proc setPortConnectCallback*(client: ClientTPtr; connectCallback: JackPortConnectCallback; arg: pointer): cint {.
+proc setPortConnectCallback*(client: ClientP; connectCallback: JackPortConnectCallback; arg: pointer): cint {.
     importc: "jack_set_port_connect_callback".}
 
-proc setPortRenameCallback*(client: ClientTPtr; renameCallback: JackPortRenameCallback; arg: pointer): cint {.
+proc setPortRenameCallback*(client: ClientP; renameCallback: JackPortRenameCallback; arg: pointer): cint {.
     importc: "jack_set_port_rename_callback".}
 
-proc setGraphOrderCallback*(client: ClientTPtr; graphCallback: JackGraphOrderCallback; a3: pointer): cint {.
+proc setGraphOrderCallback*(client: ClientP; graphCallback: JackGraphOrderCallback; a3: pointer): cint {.
     importc: "jack_set_graph_order_callback".}
 
-proc setXrunCallback*(client: ClientTPtr; xrunCallback: JackXRunCallback; arg: pointer): cint {.
+proc setXrunCallback*(client: ClientP; xrunCallback: JackXRunCallback; arg: pointer): cint {.
     importc: "jack_set_xrun_callback".}
 
-proc setLatencyCallback*(client: ClientTPtr; latencyCallback: JackLatencyCallback; arg: pointer): cint {.
+proc setLatencyCallback*(client: ClientP; latencyCallback: JackLatencyCallback; arg: pointer): cint {.
     importc: "jack_set_latency_callback".}
 
 
 # -------------------------- Server Client Control ------------------------
 
 # int jack_set_freewheel(jack_client_t* client, int onoff) ;
-proc setFreewheel*(client: ClientTPtr; onoff: cint): cint {.importc: "jack_set_freewheel".}
+proc setFreewheel*(client: ClientP; onoff: cint): cint {.importc: "jack_set_freewheel".}
 
 # int jack_set_buffer_size (jack_client_t *client, jack_nframes_t nframes) ;
-proc setBufferSize*(client: ClientTPtr; nframes: NFramesT): cint {.importc: "jack_set_buffer_size".}
+proc setBufferSize*(client: ClientP; nframes: NFrames): cint {.importc: "jack_set_buffer_size".}
 
 #jack_nframes_t jack_get_sample_rate (jack_client_t *) ;
-proc getSampleRate*(client: ClientTPtr): NFramesT {.importc: "jack_get_sample_rate".}
+proc getSampleRate*(client: ClientP): NFrames {.importc: "jack_get_sample_rate".}
 
 # jack_nframes_t jack_get_buffer_size (jack_client_t *) ;
-proc getBufferSize*(client: ClientTPtr): NFramesT {.importc: "jack_get_buffer_size".}
+proc getBufferSize*(client: ClientP): NFrames {.importc: "jack_get_buffer_size".}
 
 # DEPRECATED
-# proc engineTakeoverTimebase*(a1: ClientTPtr): cint {.
+# proc engineTakeoverTimebase*(a1: ClientP): cint {.
 #    importc: "jack_engine_takeover_timebase".}
 
 # float jack_cpu_load (jack_client_t *client) ;
-proc cpuLoad*(client: ClientTPtr): cfloat {.importc: "jack_cpu_load".}
+proc cpuLoad*(client: ClientP): cfloat {.importc: "jack_cpu_load".}
 
 
 # --------------------------------- Ports ---------------------------------
@@ -260,107 +260,107 @@ proc cpuLoad*(client: ClientTPtr): cfloat {.importc: "jack_cpu_load".}
 #                                   const char *port_type,
 #                                   unsigned long flags,
 #                                   unsigned long buffer_size) ;
-proc portRegister*(client: ClientTPtr; portName: cstring; portType: cstring;
-                   flags: culong; bufferSize: culong): PortTPtr {.importc: "jack_port_register".}
+proc portRegister*(client: ClientP; portName: cstring; portType: cstring;
+                   flags: culong; bufferSize: culong): PortP {.importc: "jack_port_register".}
 
 # int jack_port_unregister (jack_client_t *client, jack_port_t *port) ;
-proc portUnregister*(client: ClientTPtr; port: PortTPtr): cint {.importc: "jack_port_unregister".}
+proc portUnregister*(client: ClientP; port: PortP): cint {.importc: "jack_port_unregister".}
 
 # void * jack_port_get_buffer (jack_port_t *port, jack_nframes_t) ;
-proc portGetBuffer*(port: PortTPtr; nframes: NFramesT): pointer {.importc: "jack_port_get_buffer".}
+proc portGetBuffer*(port: PortP; nframes: NFrames): pointer {.importc: "jack_port_get_buffer".}
 
 # jack_uuid_t jack_port_uuid (const jack_port_t *port) ;
-proc portUuid*(port: PortTPtr): UuidT {.importc: "jack_port_uuid".}
+proc portUuid*(port: PortP): Uuid {.importc: "jack_port_uuid".}
 
 # const char * jack_port_name (const jack_port_t *port) ;
-proc portName*(port: PortTPtr): cstring {.importc: "jack_port_name".}
+proc portName*(port: PortP): cstring {.importc: "jack_port_name".}
 
 # const char * jack_port_short_name (const jack_port_t *port) ;
-proc portShortName*(port: PortTPtr): cstring {.importc: "jack_port_short_name".}
+proc portShortName*(port: PortP): cstring {.importc: "jack_port_short_name".}
 
 # int jack_port_flags (const jack_port_t *port) ;
-proc portFlags*(port: PortTPtr): cint {.importc: "jack_port_flags".}
+proc portFlags*(port: PortP): cint {.importc: "jack_port_flags".}
 
 # const char * jack_port_type (const jack_port_t *port) ;
-proc portType*(port: PortTPtr): cstring {.importc: "jack_port_type".}
+proc portType*(port: PortP): cstring {.importc: "jack_port_type".}
 
 # jack_port_type_id_t jack_port_type_id (const jack_port_t *port) ;
-proc portTypeId*(port: PortTPtr): PortTypeIdT {.importc: "jack_port_type_id".}
+proc portTypeId*(port: PortP): PortTypeId {.importc: "jack_port_type_id".}
 
 # int jack_port_is_mine (const jack_client_t *client, const jack_port_t *port) ;
-proc portIsMine*(client: ClientTPtr; port: PortTPtr): cint {.
+proc portIsMine*(client: ClientP; port: PortP): cint {.
     importc: "jack_port_is_mine".}
 
 # int jack_port_connected (const jack_port_t *port) ;
-proc portConnected*(port: PortTPtr): cint {.importc: "jack_port_connected".}
+proc portConnected*(port: PortP): cint {.importc: "jack_port_connected".}
 
 # int jack_port_connected_to (const jack_port_t *port,
 #                             const char *port_name) ;
-proc portConnectedTo*(port: PortTPtr; portName: cstring): cint {.importc: "jack_port_connected_to".}
+proc portConnectedTo*(port: PortP; portName: cstring): cint {.importc: "jack_port_connected_to".}
 
 # const char ** jack_port_get_connections (const jack_port_t *port) ;
 #
 # CAVEAT: The caller is responsible for calling jack_free() on any non-NULL
 # returned value.
-proc portGetConnections*(port: PortTPtr): cstringArray {.importc: "jack_port_get_connections".}
+proc portGetConnections*(port: PortP): cstringArray {.importc: "jack_port_get_connections".}
 
 # const char ** jack_port_get_all_connections (const jack_client_t *client,
 #                                              const jack_port_t *port) ;
 #
 # CAVEAT: The caller is responsible for calling jack_free() on any non-NULL
 # returned value.
-proc portGetAllConnections*(client: ClientTPtr; port: PortTPtr): cstringArray {.
+proc portGetAllConnections*(client: ClientP; port: PortP): cstringArray {.
     importc: "jack_port_get_all_connections".}
 
 #[ DEPRECATED
-proc portTie*(src: PortTPtr; dst: PortTPtr): cint {.importc: "jack_port_tie".}
+proc portTie*(src: PortP; dst: PortP): cint {.importc: "jack_port_tie".}
 
-proc portUntie*(port: PortTPtr): cint {.importc: "jack_port_untie".}
+proc portUntie*(port: PortP): cint {.importc: "jack_port_untie".}
 
-proc portSetName*(port: PortTPtr; portName: cstring): cint {.importc: "jack_port_set_name".}
+proc portSetName*(port: PortP; portName: cstring): cint {.importc: "jack_port_set_name".}
 ]#
 
 # int jack_port_rename (jack_client_t* client, jack_port_t *port, const char *port_name) ;
-proc portRename*(client: ClientTPtr; port: PortTPtr; portName: cstring): cint {.importc: "jack_port_rename".}
+proc portRename*(client: ClientP; port: PortP; portName: cstring): cint {.importc: "jack_port_rename".}
 
 # int jack_port_set_alias (jack_port_t *port, const char *alias) ;
-proc portSetAlias*(port: PortTPtr; alias: cstring): cint {.importc: "jack_port_set_alias".}
+proc portSetAlias*(port: PortP; alias: cstring): cint {.importc: "jack_port_set_alias".}
 
 # int jack_port_unset_alias (jack_port_t *port, const char *alias) ;
-proc portUnsetAlias*(port: PortTPtr; alias: cstring): cint {.importc: "jack_port_unset_alias".}
+proc portUnsetAlias*(port: PortP; alias: cstring): cint {.importc: "jack_port_unset_alias".}
 
 # int jack_port_get_aliases (const jack_port_t *port, char* const aliases[2]) ;
-proc portGetAliases*(port: PortTPtr; aliases: array[2, cstring]): cint {.importc: "jack_port_get_aliases".}
+proc portGetAliases*(port: PortP; aliases: array[2, cstring]): cint {.importc: "jack_port_get_aliases".}
 
 #int jack_port_request_monitor (jack_port_t *port, int onoff) ;
-proc portRequestMonitor*(port: PortTPtr; onoff: cint): cint {.importc: "jack_port_request_monitor".}
+proc portRequestMonitor*(port: PortP; onoff: cint): cint {.importc: "jack_port_request_monitor".}
 
 # int jack_port_request_monitor_by_name (jack_client_t *client,
 #                                        const char *port_name, int onoff) ;
-proc portRequestMonitorByName*(client: ClientTPtr; portName: cstring; onoff: cint): cint {.
+proc portRequestMonitorByName*(client: ClientP; portName: cstring; onoff: cint): cint {.
     importc: "jack_port_request_monitor_by_name".}
 
 # int jack_port_ensure_monitor (jack_port_t *port, int onoff) ;
-proc portEnsureMonitor*(port: PortTPtr; onoff: cint): cint {.
+proc portEnsureMonitor*(port: PortP; onoff: cint): cint {.
     importc: "jack_port_ensure_monitor".}
 
 # int jack_port_monitoring_input (jack_port_t *port) ;
-proc portMonitoringInput*(port: PortTPtr): cint {.importc: "jack_port_monitoring_input".}
+proc portMonitoringInput*(port: PortP): cint {.importc: "jack_port_monitoring_input".}
 
 # ------------------------------ Connections ------------------------------
 
 # int jack_connect (jack_client_t *client,
 #                   const char *source_port,
 #                   const char *destination_port) ;
-proc connect*(client: ClientTPtr; srcPort: cstring; destPort: cstring): cint {.importc: "jack_connect".}
+proc connect*(client: ClientP; srcPort: cstring; destPort: cstring): cint {.importc: "jack_connect".}
 
 # int jack_disconnect (jack_client_t *client,
 #                      const char *source_port,
 #                      const char *destination_port) ;
-proc disconnect*(client: ClientTPtr; srcPort: cstring; destPort: cstring): cint {.importc: "jack_disconnect".}
+proc disconnect*(client: ClientP; srcPort: cstring; destPort: cstring): cint {.importc: "jack_disconnect".}
 
 # int jack_port_disconnect (jack_client_t *client, jack_port_t *port) ;
-proc portDisconnect*(client: ClientTPtr; port: PortTPtr): cint {.importc: "jack_port_disconnect".}
+proc portDisconnect*(client: ClientP; port: PortP): cint {.importc: "jack_port_disconnect".}
 
 # int jack_port_name_size(void) ;
 proc portNameSize*(): cint {.importc: "jack_port_name_size".}
@@ -369,31 +369,31 @@ proc portNameSize*(): cint {.importc: "jack_port_name_size".}
 proc portTypeSize*(): cint {.importc: "jack_port_type_size".}
 
 # size_t jack_port_type_get_buffer_size (jack_client_t *client, const char *port_type) ;
-proc portTypeGetBufferSize*(client: ClientTPtr; portType: cstring): csize_t {.
+proc portTypeGetBufferSize*(client: ClientP; portType: cstring): csize_t {.
     importc: "jack_port_type_get_buffer_size".}
 
 # -------------------------------- Latency --------------------------------
 
 #[ FIXME: not implemented yet
 # void jack_port_set_latency (jack_port_t *port, jack_nframes_t) ;
-proc portSetLatency*(port: PortTPtr; a2: NFramesT) {.importc: "jack_port_set_latency".}
+proc portSetLatency*(port: PortP; a2: NFrames) {.importc: "jack_port_set_latency".}
 
 #[ FIXME: not implemented yet
 # void jack_port_get_latency_range (jack_port_t *port, jack_latency_callback_mode_t mode, jack_latency_range_t *range) ;
-proc portGetLatencyRange*(port: PortTPtr; mode: LatencyCallbackModeT;
-                         range: ptr LatencyRangeT) {.importc: "jack_port_get_latency_range".}
+proc portGetLatencyRange*(port: PortP; mode: LatencyCallbackMode;
+                         range: ptr LatencyRange) {.importc: "jack_port_get_latency_range".}
 
-proc portSetLatencyRange*(port: PortTPtr; mode: LatencyCallbackModeT;
-                         range: ptr LatencyRangeT) {.importc: "jack_port_set_latency_range".}
+proc portSetLatencyRange*(port: PortP; mode: LatencyCallbackMode;
+                         range: ptr LatencyRange) {.importc: "jack_port_set_latency_range".}
 ]#
 
-proc recomputeTotalLatencies*(client: ClientTPtr): cint {.importc: "jack_recompute_total_latencies".}
+proc recomputeTotalLatencies*(client: ClientP): cint {.importc: "jack_recompute_total_latencies".}
 
-proc portGetLatency*(port: PortTPtr): NFramesT {.importc: "jack_port_get_latency".}
+proc portGetLatency*(port: PortP): NFrames {.importc: "jack_port_get_latency".}
 
-proc portGetTotalLatency*(client: ClientTPtr; port: PortTPtr): NFramesT {.importc: "jack_port_get_total_latency".}
+proc portGetTotalLatency*(client: ClientP; port: PortP): NFrames {.importc: "jack_port_get_total_latency".}
 
-proc recomputeTotalLatency*(a1: ClientTPtr; port: PortTPtr): cint {.importc: "jack_recompute_total_latency".}
+proc recomputeTotalLatency*(a1: ClientP; port: PortP): cint {.importc: "jack_recompute_total_latency".}
 ]#
 
 # ------------------------------ Port Lookup ------------------------------
@@ -405,43 +405,43 @@ proc recomputeTotalLatency*(a1: ClientTPtr; port: PortTPtr): cint {.importc: "ja
 #
 # CAVEAT: The caller is responsible for calling jack_free() on any non-NULL
 # returned value.
-proc getPorts*(client: ClientTPtr; portNamePattern: cstring;
+proc getPorts*(client: ClientP; portNamePattern: cstring;
                typeNamePattern: cstring; flags: culong): cstringArray {.importc: "jack_get_ports".}
 
 # jack_port_t * jack_port_by_name (jack_client_t *client, const char *port_name) ;
-proc portByName*(client: ClientTPtr; portName: cstring): PortTPtr {.importc: "jack_port_by_name".}
+proc portByName*(client: ClientP; portName: cstring): PortP {.importc: "jack_port_by_name".}
 
 # jack_port_t * jack_port_by_id (jack_client_t *client, jack_port_id_t port_id) ;
-proc portById*(client: ClientTPtr; portId: PortIdT): PortTPtr {.importc: "jack_port_by_id".}
+proc portById*(client: ClientP; portId: PortId): PortP {.importc: "jack_port_by_id".}
 
 # ----------------------------- Time handling -----------------------------
 
 # jack_nframes_t jack_frames_since_cycle_start (const jack_client_t *) ;
-proc framesSinceCycleStart*(client: ClientTPtr): NFramesT {.importc: "jack_frames_since_cycle_start".}
+proc framesSinceCycleStart*(client: ClientP): NFrames {.importc: "jack_frames_since_cycle_start".}
 
 # jack_nframes_t jack_frame_time (const jack_client_t *) ;
-proc frameTime*(client: ClientTPtr): NFramesT {.importc: "jack_frame_time".}
+proc frameTime*(client: ClientP): NFrames {.importc: "jack_frame_time".}
 
 # jack_nframes_t jack_last_frame_time (const jack_client_t *client) ;
-proc lastFrameTime*(client: ClientTPtr): NFramesT {.importc: "jack_last_frame_time".}
+proc lastFrameTime*(client: ClientP): NFrames {.importc: "jack_last_frame_time".}
 
 # int jack_get_cycle_times(const jack_client_t *client,
 #                         jack_nframes_t *current_frames,
 #                         jack_time_t    *current_usecs,
 #                         jack_time_t    *next_usecs,
 #                         float          *period_usecs) ;
-proc getCycleTimes*(client: ClientTPtr; currentFrames: ptr NFramesT;
-                    currentUsecs: ptr TimeT; nextUsecs: ptr TimeT;
+proc getCycleTimes*(client: ClientP; currentFrames: ptr NFrames;
+                    currentUsecs: ptr Time; nextUsecs: ptr Time;
                     periodUsecs: ptr cfloat): cint {.importc: "jack_get_cycle_times".}
 
 # jack_time_t jack_frames_to_time(const jack_client_t *client, jack_nframes_t) ;
-proc framesToTime*(client: ClientTPtr; nframes: NFramesT): TimeT {.importc: "jack_frames_to_time".}
+proc framesToTime*(client: ClientP; nframes: NFrames): Time {.importc: "jack_frames_to_time".}
 
 # jack_nframes_t jack_time_to_frames(const jack_client_t *client, jack_time_t) ;
-proc timeToFrames*(client: ClientTPtr; time: TimeT): NFramesT {.importc: "jack_time_to_frames".}
+proc timeToFrames*(client: ClientP; time: Time): NFrames {.importc: "jack_time_to_frames".}
 
 # jack_time_t jack_get_time(void) ;
-proc getTime*(): TimeT {.importc: "jack_get_time".}
+proc getTime*(): Time {.importc: "jack_get_time".}
 
 # ---------------------------- Error handling -----------------------------
 
