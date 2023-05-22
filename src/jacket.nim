@@ -132,8 +132,9 @@ proc free*(`ptr`: pointer) {.importc: "jack_free".}
 proc clientOpen*(clientName: cstring; options: cint; status: ptr cint): ClientP {.
     varargs, importc: "jack_client_open".}
 
-# DEPRECATED
-# proc clientNew*(clientName: cstring): ClientP {.importc: "jack_client_new".}
+#[ DEPRECATED
+jack_client_t * jack_client_new (const char *client_name)
+]#
 
 # int jack_client_close (jack_client_t *client)
 proc clientClose*(client: ClientP): cint {.importc: "jack_client_close"}
@@ -175,9 +176,9 @@ proc getClientPid*(name: cstring): cint {.importc: "jack_get_client_pid".}
 # int jack_is_realtime (jack_client_t *client)
 proc isRealtime*(client: ClientP): cint {.importc: "jack_is_realtime".}
 
-# DEPRECATED
-# proc threadWait*(client: ClientP; status: cint): NFrames {.
-#     importc: "jack_thread_wait".}
+#[ DEPRECATED
+jack_nframes_t jack_thread_wait (jack_client_t *client, int status)
+]#
 
 # jack_nframes_t jack_cycle_wait (jack_client_t* client)
 proc cycleWait*(client: ClientP): NFrames {.importc: "jack_cycle_wait".}
@@ -250,9 +251,9 @@ proc getSampleRate*(client: ClientP): NFrames {.importc: "jack_get_sample_rate".
 # jack_nframes_t jack_get_buffer_size (jack_client_t *)
 proc getBufferSize*(client: ClientP): NFrames {.importc: "jack_get_buffer_size".}
 
-# DEPRECATED
-# proc engineTakeoverTimebase*(a1: ClientP): cint {.
-#    importc: "jack_engine_takeover_timebase".}
+#[ DEPRECATED
+int jack_engine_takeover_timebase (jack_client_t *)
+]#
 
 # float jack_cpu_load (jack_client_t *client)
 proc cpuLoad*(client: ClientP): cfloat {.importc: "jack_cpu_load".}
@@ -316,11 +317,11 @@ proc portGetAllConnections*(client: ClientP; port: PortP): cstringArray {.
     importc: "jack_port_get_all_connections".}
 
 #[ DEPRECATED
-proc portTie*(src: PortP; dst: PortP): cint {.importc: "jack_port_tie".}
+int jack_port_tie (jack_port_t *src, jack_port_t *dst)
 
-proc portUntie*(port: PortP): cint {.importc: "jack_port_untie".}
+int jack_port_untie (jack_port_t *port)
 
-proc portSetName*(port: PortP; portName: cstring): cint {.importc: "jack_port_set_name".}
+int jack_port_set_name (jack_port_t *port, const char *port_name)
 ]#
 
 # int jack_port_rename (jack_client_t* client, jack_port_t *port, const char *port_name)
