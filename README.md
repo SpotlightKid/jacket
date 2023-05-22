@@ -8,7 +8,7 @@ A [Nim] wrapper for the [JACK] [C API]
 This software is in *alpha status* and has no official release yet.
 
 The basic JACK APIs (client lifecycle, ports, callbacks) have been wrapped and
-are functional (see [examples]), but MIDI, transport and meta-data APIs still 
+are functional (see [examples]), but latency, transport and meta-data APIs still
 need wrapping. Also, symbol names may still be changed and things moved around
 before the first public release.
 

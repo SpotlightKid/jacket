@@ -41,6 +41,14 @@ type
     PortP* = ptr Port
 
 type
+    MidiData* = uint8
+    MidiEvent* = object
+        time*: NFrames
+        size*: csize_t
+        buffer*: ptr UncheckedArray[MidiData]
+    MidiEventP* = ptr MidiEvent
+
+type
     JackOptions* {.size: sizeof(cint) pure.} = enum
         NullOption = 0x00,
         NoStartServer = 0x01,
@@ -371,6 +379,32 @@ proc portTypeSize*(): cint {.importc: "jack_port_type_size".}
 # size_t jack_port_type_get_buffer_size (jack_client_t *client, const char *port_type) ;
 proc portTypeGetBufferSize*(client: ClientP; portType: cstring): csize_t {.
     importc: "jack_port_type_get_buffer_size".}
+
+# --------------------------------- MIDI ----------------------------------
+
+# jack_nframes_t jack_midi_get_event_count (void *port_buffer)
+proc midiGetEventCount*(portBuffer: pointer): NFrames {.importc: "jack_midi_get_event_count".}
+
+# int jack_midi_event_get (jack_midi_event_t *event, void *port_buffer, uint32_t event_index)
+proc midiEventGet*(event: MidiEventP, portBuffer: pointer, eventIndex: uint32): cint {.
+    importc: "jack_midi_event_get".}
+
+# void jack_midi_clear_buffer (void *port_buffer)
+proc midiClearBuffer*(portBuffer: pointer) {.importc: "jack_midi_clear_buffer".}
+
+# size_t jack_midi_max_event_size (void *port_buffer)
+proc midiMaxEventSize*(portBuffer: pointer): csize_t {.importc: "jack_midi_max_event_size".}
+
+# jack_midi_data_t * jack_midi_event_reserve (void *port_buffer, jack_nframes_t time, size_t data_size)
+proc midiEventReserve*(portBuffer: pointer, time: NFrames, dataSize: csize_t): ptr MidiData {.
+    importc: "jack_midi_event_reserve".}
+
+# int jack_midi_event_write (void *port_buffer, jack_nframes_t time, const jack_midi_data_t *data, size_t data_size)
+proc midiEventWrite*(portBuffer: pointer, time: NFrames, data: ptr MidiData, dataSize: csize_t): int {.
+    importc: "jack_midi_event_write".}
+
+# uint32_t jack_midi_get_lost_event_count (void *port_buffer)
+proc midiGetLostEventCount*(portBuffer: pointer): uint32 {.importc: "jack_midi_get_lost_event_count".}
 
 # -------------------------------- Latency --------------------------------
 
