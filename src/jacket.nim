@@ -24,14 +24,15 @@ const
     JACK_DEFAULT_AUDIO_TYPE* = "32 bit float mono audio"
     JACK_DEFAULT_MIDI_TYPE* = "8 bit raw midi"
 
+
 # ----------------------------- Custom Types ------------------------------
 
 type
-    Time* = culonglong
-    NFrames* = culong
-    Uuid* = culonglong
-    PortId* = culong
-    PortTypeId* = culong
+    Time* = uint64
+    NFrames* = uint32
+    Uuid* = uint64
+    PortId* = uint32
+    PortTypeId* = uint32
     DefaultAudioSample* = cfloat
 
 type
