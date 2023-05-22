@@ -7,10 +7,10 @@ A [Nim] wrapper for the [JACK] [C API]
 
 This software is in *alpha status* and has no official release yet.
 
-The basic JACK APIs (client lifecycle, ports, callbacks) have been wrapped and
-are functional (see [examples]), but latency, transport and meta-data APIs still
-need wrapping. Also, symbol names may still be changed and things moved around
-before the first public release.
+The basic JACK APIs (client lifecycle, ports, callbacks, MIDI, transport) have
+been wrapped and are functional (see [examples]), but latency, threading and
+meta-data APIs still need wrapping. Also, symbol names may still be changed
+and things moved around before the first public release.
 
 Also, I plan to add a higher-level abstraction on top of the direct mapping
 from Nim procs and types to C functions and types, probably in the form of

@@ -89,7 +89,86 @@ type
         CaptureLatency,
         PlaybackLatency
 
+# Transport
+
+type
+    PositionBits* {.size: sizeof(cint).} = enum
+        PositionBBT = 0x10,
+        PositionTimecode = 0x20,
+        BBTFrameOffset = 0x40,
+        AudioVideoRatio = 0x80,
+        VideoFrameOffset = 0x100,
+        TickDouble = 0x200
+
+    TransportState* {.size: sizeof(cint).} = enum
+        TransportStopped = 0,
+        TransportRolling = 1,
+        TransportLooping = 2,
+        TransportStarting = 3,
+        TransportNetStarting = 4
+
+type
+    Position* = object
+        unique1*: uint64
+        usecs*: Time
+        frameRate*: NFrames
+        frame*: NFrames
+        valid*: PositionBits
+        bar*: int32
+        beat*: int32
+        tick*: int32
+        barStartTick*: cdouble
+        beatsPerBar*: cfloat
+        beatType*: cfloat
+        ticksPerBeat*: cdouble
+        beatsPerMinute*: cdouble
+        frameTime*: cdouble
+        nextTime*: cdouble
+        bbtOffset*: NFrames
+        audioFramesPerVideoFrame*: cfloat
+        videoOffset*: NFrames
+        tickDouble*: cdouble
+        padding*: array[5, int32]
+        unique2*: uint64
+    PositionP* = ptr Position
+
+#[ DEPRECATED
+typedef enum {
+    JackTransportState = 0x1,
+    JackTransportPosition = 0x2,
+    JackTransportLoop = 0x4,
+    JackTransportSMPTE = 0x8,
+    JackTransportBBT = 0x10
+} jack_transport_bits_t;
+
+typedef struct {
+    jack_nframes_t frame_rate;
+    jack_time_t usecs;
+    jack_transport_bits_t valid;
+    jack_transport_state_t transport_state;
+    jack_nframes_t frame;
+    jack_nframes_t loop_start;
+    jack_nframes_t loop_end;
+    long smpte_offset
+    float smpte_frame_rate;
+    int bar;
+    int beat;
+    int tick;
+    double bar_start_tick;
+    float beats_per_bar;
+    float beat_type;
+    double ticks_per_beat;
+    double beats_per_minute;
+} jack_transport_info_t;
+]#
+
+const
+    JACK_POSITION_MASK* = (PositionBBT.ord or PositionTimecode.ord)
+    EXTENDED_TIME_INFO* = true
+    JACK_TICK_DOUBLE* = true
+
 # Callback function types
+
 type
     JackProcessCallback* = proc (nframes: NFrames; arg: pointer): cint {.cdecl.}
     JackThreadCallback* = proc (arg: pointer): pointer {.cdecl.}
@@ -108,6 +187,10 @@ type
     JackLatencyCallback* = proc (mode: JackLatencyCallbackMode; arg: pointer) {.cdecl.}
     JackInfoCallback* = proc (msg: cstring) {.cdecl.}
     JackErrorCallback* = proc (msg: cstring) {.cdecl.}
+
+    JackSyncCallback* = proc (state: TransportState; pos: ptr Position; arg: pointer): cint {.cdecl.}
+    JackTimebaseCallback* = proc (state: TransportState; nframes: NFrames; pos: ptr Position; newPos: cint;
+                                  arg: pointer) {.cdecl.}
 
 
 # ----------------------------- Version info ------------------------------
@@ -475,6 +558,50 @@ proc timeToFrames*(client: ClientP; time: Time): NFrames {.importc: "jack_time_t
 
 # jack_time_t jack_get_time(void)
 proc getTime*(): Time {.importc: "jack_get_time".}
+
+
+# ------------------------------- Transport -------------------------------
+
+# int jack_release_timebase (jack_client_t *client)
+proc releaseTimebase*(client: ClientP): cint {.importc: "jack_release_timebase".}
+
+# int jack_set_sync_callback (jack_client_t *client, JackSyncCallback sync_callback, void *arg)
+proc setSyncCallback*(client: ClientP; syncCallback: JackSyncCallback; arg: pointer): cint {.
+    importc: "jack_set_sync_callback".}
+
+# int jack_set_sync_timeout (jack_client_t *client, jack_time_t timeout)
+proc setSyncTimeout*(client: ClientP; timeout: Time): cint {.importc: "jack_set_sync_timeout".}
+
+# int jack_set_timebase_callback (jack_client_t *client,
+#                                 int conditional,
+#                                 JackTimebaseCallback timebase_callback,
+#                                 void *arg)
+proc setTimebaseCallback*(client: ClientP; conditional: cint; timebaseCallback: JackTimebaseCallback;
+                          arg: pointer): cint {.
+    importc: "jack_set_timebase_callback".}
+
+# int jack_transport_locate (jack_client_t *client, jack_nframes_t frame)
+proc transportLocate*(client: ClientP; frame: NFrames): cint {.importc: "jack_transport_locate".}
+
+# jack_transport_state_t jack_transport_query (const jack_client_t *client, jack_position_t *pos)
+proc transportQuery*(client: ClientP; pos: PositionP): TransportState {.importc: "jack_transport_query".}
+
+# jack_nframes_t jack_get_current_transport_frame (const jack_client_t *client)
+proc getCurrentTransportFrame*(client: ClientP): NFrames {.importc: "jack_get_current_transport_frame".}
+
+# int jack_transport_reposition (jack_client_t *client, const jack_position_t *pos)
+proc transportReposition*(client: ClientP; pos: PositionP): cint {.importc: "jack_transport_reposition".}
+
+# void jack_transport_start (jack_client_t *client)
+proc transportStart*(client: ClientP) {.importc: "jack_transport_start".}
+
+# void jack_transport_stop (jack_client_t *client)
+proc transportStop*(client: ClientP) {.importc: "jack_transport_stop".}
+
+#[ DEPRECATED
+void jack_get_transport_info (jack_client_t *client, jack_transport_info_t *tinfo)
+void jack_set_transport_info (jack_client_t *client, jack_transport_info_t *tinfo)
+]#
 
 # ---------------------------- Error handling -----------------------------
 
