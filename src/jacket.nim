@@ -15,6 +15,7 @@ proc getJackLibName: string =
         result = "libjack.so.0"
   
 {.push dynlib: getJackLibName().}
+
 # ------------------------------ Constants --------------------------------
 
 const

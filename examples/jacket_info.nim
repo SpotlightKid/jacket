@@ -6,7 +6,7 @@ var status: cint
 var log = newConsoleLogger(when defined(release): lvlInfo else: lvlDebug)
 
 proc errorCb(msg: cstring) {.cdecl.} =
-    # Suppress verbose JACK error messges when server is not available by 
+    # Suppress verbose JACK error messages when server is not available by 
     # default. Pass ``lvlAll`` when creating the logger to enable them.
     debug "JACK error: " & $msg
 
