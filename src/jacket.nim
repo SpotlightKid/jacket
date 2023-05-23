@@ -167,6 +167,27 @@ const
     EXTENDED_TIME_INFO* = true
     JACK_TICK_DOUBLE* = true
 
+# Metadata
+
+type
+    Property* = object
+        key*: cstring
+        data*: cstring
+        `type`*: cstring
+
+    PropertyChange* {.size: sizeof(cint).} = enum
+        PropertyCreated,
+        PropertyChanged,
+        PropertyDeleted
+
+    Description* = object
+        subject*: Uuid
+        property_cnt*: uint32
+        properties*: ptr UncheckedArray[Property]
+        property_size*: uint32
+
+    DescriptionP* = ptr Description
+
 # Callback function types
 
 type
@@ -191,6 +212,11 @@ type
     JackSyncCallback* = proc (state: TransportState; pos: ptr Position; arg: pointer): cint {.cdecl.}
     JackTimebaseCallback* = proc (state: TransportState; nframes: NFrames; pos: ptr Position; newPos: cint;
                                   arg: pointer) {.cdecl.}
+
+    JackPropertyChangeCallback* = proc (subject: Uuid, key: cstring, change: JackPropertyChange, arg: pointer) {.cdecl.}
+
+
+    PropertyChangeCallback* = proc (subject: Uuid, key: cstring, change: PropertyChange, arg: pointer) {.cdecl.}
 
 
 # ----------------------------- Version info ------------------------------
@@ -602,6 +628,37 @@ proc transportStop*(client: ClientP) {.importc: "jack_transport_stop".}
 void jack_get_transport_info (jack_client_t *client, jack_transport_info_t *tinfo)
 void jack_set_transport_info (jack_client_t *client, jack_transport_info_t *tinfo)
 ]#
+
+# ------------------------------- Metadata --------------------------------
+
+# int jack_set_property (jack_client_t*, jack_uuid_t subject, const char* key, const char* value, const char* type)
+proc setProperty*(client: ClientP, subject: Uuid, key, value, `type`: cstring): cint {.importc: "jack_set_property".}
+
+# int jack_get_property (jack_uuid_t subject, const char* key, char** value, char** type)
+proc getProperty*(subject: Uuid, key: cstring, value, `type`: ptr cstring): cint {.importc: "jack_get_property".}
+
+# void jack_free_description (jack_description_t* desc, int free_description_itself)
+proc freeDescription*(desc: DescriptionP, freeDescriptionItself: cint) {.importc: "jack_free_description".}
+
+# int jack_get_properties (jack_uuid_t subject, jack_description_t* desc)
+proc getProperties*(subject: Uuid, desc: DescriptionP): cint {.importc: "jack_get_properties".}
+
+# int jack_get_all_properties (jack_description_t** descs)
+proc getAllProperties*(descs: var ptr UncheckedArray[Description]): cint {.importc: "jack_get_all_properties".}
+
+# int jack_remove_property (jack_client_t* client, jack_uuid_t subject, const char* key)
+proc removeProperty*(client: ClientP, subject: Uuid): cint {.importc: "jack_remove_property".}
+
+# int jack_remove_properties (jack_client_t* client, jack_uuid_t subject)
+proc removeProperties*(client: ClientP, subject: Uuid): cint {.importc: "jack_remove_properties".}
+
+# int jack_remove_all_properties (jack_client_t* client)
+proc removeAllProperties*(client: ClientP): cint {.importc: "jack_remove_all_properties".}
+
+# int jack_set_property_change_callback (jack_client_t* client, JackPropertyChangeCallback callback, void* arg)
+proc setPropertyChangeCallback*(client: ClientP, callback: PropertyChangeCallback, arg: pointer): cint {.
+    importc: "jack_set_property_change_callback".}
+
 
 # ---------------------------- Error handling -----------------------------
 
