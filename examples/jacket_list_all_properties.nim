@@ -2,7 +2,6 @@ import std/[logging, strformat]
 import jacket
 
 var
-    jclient: ClientP
     status: cint
     descs: ptr UncheckedArray[Description]
 
@@ -15,7 +14,7 @@ proc errorCb(msg: cstring) {.cdecl.} =
 
 addHandler(log)
 setErrorFunction(errorCb)
-jclient = clientOpen("jacket_property", NullOption.ord, status.addr)
+let jclient = clientOpen("jacket_property", NullOption.ord, status.addr)
 debug "JACK server status: " & $status
 
 if jclient == nil:
@@ -25,10 +24,8 @@ if jclient == nil:
 let numDescs = getAllProperties(descs)
 
 if numDescs != -1:
-    var desc: Description
-
     for i in 0..<numDescs:
-        desc = descs[i]
+        var desc = descs[i]
         echo fmt"Subject: {desc.subject}"
 
         if desc.property_cnt > 0:
