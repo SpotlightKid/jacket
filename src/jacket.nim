@@ -30,6 +30,7 @@ const
 type
     Time* = uint64
     NFrames* = uint32
+    IntClient = uint64
     Uuid* = uint64
     PortId* = uint32
     PortTypeId* = uint32
@@ -260,13 +261,6 @@ proc getUuidForClientName*(client: ClientP; clientName: cstring): cstring {.
 proc getClientNameByUuid*(client: ClientP; clientUuid: cstring): cstring {.
     importc: "jack_get_client_name_by_uuid".}
 
-#[ FIXME: not implemented yet
-proc internalClientNew*(clientName: cstring; loadName: cstring; loadInit: cstring): cint {.
-    importc: "jack_internal_client_new".}
-
-proc internalClientClose*(clientName: cstring) {.importc: "jack_internal_client_close".}
-]#
-
 # int jack_activate (jack_client_t *client)
 proc activate*(client: ClientP): cint {.importc: "jack_activate".}
 
@@ -292,6 +286,33 @@ proc cycleWait*(client: ClientP): NFrames {.importc: "jack_cycle_wait".}
 
 # void jack_cycle_signal (jack_client_t* client, int status)
 proc cycleSignal*(client: ClientP; status: cint) {.importc: "jack_cycle_signal".}
+
+
+# --------------------------- Internal Clients ----------------------------
+
+# char *jack_get_internal_client_name (jack_client_t *client, jack_intclient_t intclient);
+proc getInternalClientName(client: ClientP; intclient: IntClient): cstring {.
+    importc: "jack_get_internal_client_name".}
+
+# jack_intclient_t jack_internal_client_handle (jack_client_t *client, const char *client_name,
+#                                               jack_status_t *status)
+proc internalClientHandle(client: ClientP; clientName: cstring; status: ptr cint): IntClient {.
+    importc: "jack_internal_client_handle".}
+
+# jack_intclient_t jack_internal_client_load (jack_client_t *client, const char *client_name,
+#                                             jack_options_t options, jack_status_t *status, ...)
+proc internalClientLoad(client: ClientP; clientName: cstring; options: cint; status: ptr cint): IntClient {.
+    varargs, importc: "jack_internal_client_load".}
+
+# jack_status_t jack_internal_client_unload (jack_client_t *client, jack_intclient_t intclient)
+
+proc internalClientUnload(client: ClientP; intclient: IntClient): cint {.
+    importc: "jack_internal_client_unload".}
+
+#[ DEPRECATED
+int jack_internal_client_new (const char * client_name, const char *load_name, const char *load_init)
+void jack_internal_client_close (const char *client_name)
+]#
 
 
 # ------------------------------- Callbacks -------------------------------
