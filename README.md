@@ -7,10 +7,12 @@ A [Nim] wrapper for the [JACK] [C API]
 
 This software is in *alpha status* and has no official release yet.
 
-The basic JACK APIs (client lifecycle, ports, callbacks, MIDI, transport) have
-been wrapped and are functional (see [examples]), but latency, threading and
-meta-data APIs still need wrapping. Also, symbol names may still be changed
-and things moved around before the first public release.
+The majority of JACK client APIs have been wrapped and are functional (see
+[examples]), but some APIs (e.g. threading and ringbuffers) still need
+wrapping. Others, like the server control or the deprecated session API, will
+probably not covered by these bindings. While this project is in alpha or beta
+stage, symbol names may still be changed and things moved around before the
+first public release.
 
 Also, I plan to add a higher-level abstraction on top of the direct mapping
 from Nim procs and types to C functions and types, probably in the form of
@@ -24,7 +26,8 @@ JACK application.
 * Clone this repository.
 * Change into the `jacket` directory.
 * Run [`nimble install`] (or `nimble develop`).
-* Run the examples with `nim compile --run examples/<example>.nim`.
+* Run the examples with `nim compile --run examples/<example>.nim` (some also
+  need `--threads:on`).
 
 
 ## License
