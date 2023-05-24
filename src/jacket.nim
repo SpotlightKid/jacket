@@ -172,6 +172,17 @@ const
     EXTENDED_TIME_INFO* = true
     JACK_TICK_DOUBLE* = true
 
+# Ringbuffer
+
+type
+    RingbufferData* = object
+        buf*: ptr char
+        len*: csize_t
+    RingbufferDataP* = ptr RingbufferData
+
+    Ringbuffer = distinct object
+    RingbufferP* = ptr Ringbuffer
+
 # Metadata
 
 type
@@ -642,6 +653,47 @@ proc transportStop*(client: ClientP) {.importc: "jack_transport_stop".}
 void jack_get_transport_info (jack_client_t *client, jack_transport_info_t *tinfo)
 void jack_set_transport_info (jack_client_t *client, jack_transport_info_t *tinfo)
 ]#
+
+# ----------------------------- Ringbuffers -------------------------------
+
+# jack_ringbuffer_t *jack_ringbuffer_create (size_t sz)
+proc ringbufferCreate*(sz: csize_t): RingbufferP {.importc: "jack_ringbuffer_create".}
+
+# void jack_ringbuffer_free (jack_ringbuffer_t *rb)
+proc ringbufferFree*(rb: RingbufferP) {.importc: "jack_ringbuffer_free".}
+
+# void jack_ringbuffer_get_read_vector (const jack_ringbuffer_t *rb, jack_ringbuffer_data_t *vec)
+proc ringbufferGetReadVector*(rb: RingbufferP, vec: var RingbufferDataP) {.importc: "jack_ringbuffer_get_read_vector".}
+
+# void jack_ringbuffer_get_write_vector (const jack_ringbuffer_t *rb, jack_ringbuffer_data_t *vec)
+proc ringbufferGetWriteVector*(rb: RingbufferP, vec: var RingbufferDataP) {.importc: "jack_ringbuffer_get_write_vector".}
+
+# size_t jack_ringbuffer_read (jack_ringbuffer_t *rb, char *dest, size_t cnt)
+proc ringbufferRead*(rb: RingbufferP, dest: cstring, cnt: csize_t): csize_t {.importc: "jack_ringbuffer_read".}
+
+# size_t jack_ringbuffer_peek (jack_ringbuffer_t *rb, char *dest, size_t cnt)
+proc ringbufferPeek*(rb: RingbufferP, dest: cstring, cnt: csize_t): csize_t {.importc: "jack_ringbuffer_peek".}
+
+# void jack_ringbuffer_read_advance (jack_ringbuffer_t *rb, size_t cnt)
+proc ringbufferReadAdvance*(rb: RingbufferP, cnt: csize_t) {.importc: "jack_ringbuffer_read_advance".}
+
+# size_t jack_ringbuffer_read_space (const jack_ringbuffer_t *rb)
+proc ringbufferReadSpace*(rb: RingbufferP): csize_t {.importc: "jack_ringbuffer_read_space".}
+
+# int jack_ringbuffer_mlock (jack_ringbuffer_t *rb)
+proc ringbufferMlock*(rb: RingbufferP): int {.importc: "jack_ringbuffer_mlock".}
+
+# void jack_ringbuffer_reset (jack_ringbuffer_t *rb)
+proc ringbufferReset*(rb: RingbufferP) {.importc: "jack_ringbuffer_reset".}
+
+# size_t jack_ringbuffer_write (jack_ringbuffer_t *rb, const char *src, size_t cnt)
+proc ringbufferWrite*(rb: RingbufferP, src: cstring, cnt: csize_t): csize_t {.importc: "jack_ringbuffer_write".}
+
+# void jack_ringbuffer_write_advance (jack_ringbuffer_t *rb, size_t cnt)
+proc ringbufferWriteAdvance*(rb: RingbufferP, cnt: csize_t) {.importc: "jack_ringbuffer_write_advance".}
+
+# size_t jack_ringbuffer_write_space (const jack_ringbuffer_t *rb)
+proc ringbufferWriteSpace*(rb: RingbufferP): csize_t {.importc: "jack_ringbuffer_write_space".}
 
 # ------------------------------- Metadata --------------------------------
 
