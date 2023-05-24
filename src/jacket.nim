@@ -86,6 +86,10 @@ type
         PortIsTerminal = 0x10
 
 type
+    LatencyRange* = object
+        min*: NFrames
+        max*: NFrames
+
     LatencyCallbackMode* {.size: sizeof(cint) pure.} = enum
         CaptureLatency,
         PlaybackLatency
@@ -553,24 +557,22 @@ proc midiGetLostEventCount*(portBuffer: pointer): uint32 {.importc: "jack_midi_g
 
 # -------------------------------- Latency --------------------------------
 
-#[ FIXME: not implemented yet
-# void jack_port_set_latency (jack_port_t *port, jack_nframes_t)
-proc portSetLatency*(port: PortP; a2: NFrames) {.importc: "jack_port_set_latency".}
-
 # void jack_port_get_latency_range (jack_port_t *port, jack_latency_callback_mode_t mode, jack_latency_range_t *range)
-proc portGetLatencyRange*(port: PortP; mode: LatencyCallbackMode;
-                         range: ptr LatencyRange) {.importc: "jack_port_get_latency_range".}
+proc portGetLatencyRange*(port: PortP; mode: LatencyCallbackMode; range: ptr LatencyRange) {.
+    importc: "jack_port_get_latency_range".}
 
-proc portSetLatencyRange*(port: PortP; mode: LatencyCallbackMode;
-                         range: ptr LatencyRange) {.importc: "jack_port_set_latency_range".}
+# void jack_port_set_latency_range (jack_port_t *port, jack_latency_callback_mode_t mode, jack_latency_range_t *range)
+proc portSetLatencyRange*(port: PortP; mode: LatencyCallbackMode; range: ptr LatencyRange) {.
+    importc: "jack_port_set_latency_range".}
 
+# int jack_recompute_total_latencies (jack_client_t *)
 proc recomputeTotalLatencies*(client: ClientP): cint {.importc: "jack_recompute_total_latencies".}
 
-proc portGetLatency*(port: PortP): NFrames {.importc: "jack_port_get_latency".}
-
-proc portGetTotalLatency*(client: ClientP; port: PortP): NFrames {.importc: "jack_port_get_total_latency".}
-
-proc recomputeTotalLatency*(a1: ClientP; port: PortP): cint {.importc: "jack_recompute_total_latency".}
+#[ DEPRECATED
+jack_nframes_t jack_port_get_latency (jack_port_t *port)
+jack_nframes_t jack_port_get_total_latency (jack_client_t *, jack_port_t *port)
+void jack_port_set_latency (jack_port_t *port, jack_nframes_t)
+int jack_recompute_total_latency (jack_client_t *, jack_port_t *port)
 ]#
 
 
