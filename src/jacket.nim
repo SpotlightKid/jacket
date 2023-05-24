@@ -244,10 +244,6 @@ proc free*(`ptr`: pointer) {.importc: "jack_free".}
 proc clientOpen*(clientName: cstring; options: cint; status: ptr cint): ClientP {.
     varargs, importc: "jack_client_open".}
 
-#[ DEPRECATED
-jack_client_t * jack_client_new (const char *client_name)
-]#
-
 # int jack_client_close (jack_client_t *client)
 proc clientClose*(client: ClientP): cint {.importc: "jack_client_close"}
 
@@ -281,16 +277,16 @@ proc getClientPid*(name: cstring): cint {.importc: "jack_get_client_pid".}
 # int jack_is_realtime (jack_client_t *client)
 proc isRealtime*(client: ClientP): cint {.importc: "jack_is_realtime".}
 
-#[ DEPRECATED
-jack_nframes_t jack_thread_wait (jack_client_t *client, int status)
-]#
-
 # jack_nframes_t jack_cycle_wait (jack_client_t* client)
 proc cycleWait*(client: ClientP): NFrames {.importc: "jack_cycle_wait".}
 
 # void jack_cycle_signal (jack_client_t* client, int status)
 proc cycleSignal*(client: ClientP; status: cint) {.importc: "jack_cycle_signal".}
 
+#[ DEPRECATED
+jack_client_t *jack_client_new (const char *client_name)
+jack_nframes_t jack_thread_wait (jack_client_t *client, int status)
+]#
 
 # --------------------------- Internal Clients ----------------------------
 
@@ -383,12 +379,12 @@ proc getSampleRate*(client: ClientP): NFrames {.importc: "jack_get_sample_rate".
 # jack_nframes_t jack_get_buffer_size (jack_client_t *)
 proc getBufferSize*(client: ClientP): NFrames {.importc: "jack_get_buffer_size".}
 
+# float jack_cpu_load (jack_client_t *client)
+proc cpuLoad*(client: ClientP): cfloat {.importc: "jack_cpu_load".}
+
 #[ DEPRECATED
 int jack_engine_takeover_timebase (jack_client_t *)
 ]#
-
-# float jack_cpu_load (jack_client_t *client)
-proc cpuLoad*(client: ClientP): cfloat {.importc: "jack_cpu_load".}
 
 
 # --------------------------------- Ports ---------------------------------
@@ -448,14 +444,6 @@ proc portGetConnections*(port: PortP): cstringArray {.importc: "jack_port_get_co
 proc portGetAllConnections*(client: ClientP; port: PortP): cstringArray {.
     importc: "jack_port_get_all_connections".}
 
-#[ DEPRECATED
-int jack_port_tie (jack_port_t *src, jack_port_t *dst)
-
-int jack_port_untie (jack_port_t *port)
-
-int jack_port_set_name (jack_port_t *port, const char *port_name)
-]#
-
 # int jack_port_rename (jack_client_t* client, jack_port_t *port, const char *port_name)
 proc portRename*(client: ClientP; port: PortP; portName: cstring): cint {.importc: "jack_port_rename".}
 
@@ -482,6 +470,12 @@ proc portEnsureMonitor*(port: PortP; onoff: cint): cint {.
 
 # int jack_port_monitoring_input (jack_port_t *port)
 proc portMonitoringInput*(port: PortP): cint {.importc: "jack_port_monitoring_input".}
+
+#[ DEPRECATED
+int jack_port_tie (jack_port_t *src, jack_port_t *dst)
+int jack_port_untie (jack_port_t *port)
+int jack_port_set_name (jack_port_t *port, const char *port_name)
+]#
 
 
 # ------------------------------ Port Lookup ------------------------------
