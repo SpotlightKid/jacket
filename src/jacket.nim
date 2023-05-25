@@ -291,22 +291,22 @@ jack_nframes_t jack_thread_wait (jack_client_t *client, int status)
 # --------------------------- Internal Clients ----------------------------
 
 # char *jack_get_internal_client_name (jack_client_t *client, jack_intclient_t intclient);
-proc getInternalClientName(client: ClientP; intclient: IntClient): cstring {.
+proc getInternalClientName*(client: ClientP; intclient: IntClient): cstring {.
     importc: "jack_get_internal_client_name".}
 
 # jack_intclient_t jack_internal_client_handle (jack_client_t *client, const char *client_name,
 #                                               jack_status_t *status)
-proc internalClientHandle(client: ClientP; clientName: cstring; status: ptr cint): IntClient {.
+proc internalClientHandle*(client: ClientP; clientName: cstring; status: ptr cint): IntClient {.
     importc: "jack_internal_client_handle".}
 
 # jack_intclient_t jack_internal_client_load (jack_client_t *client, const char *client_name,
 #                                             jack_options_t options, jack_status_t *status, ...)
-proc internalClientLoad(client: ClientP; clientName: cstring; options: cint; status: ptr cint): IntClient {.
+proc internalClientLoad*(client: ClientP; clientName: cstring; options: cint; status: ptr cint): IntClient {.
     varargs, importc: "jack_internal_client_load".}
 
 # jack_status_t jack_internal_client_unload (jack_client_t *client, jack_intclient_t intclient)
 
-proc internalClientUnload(client: ClientP; intclient: IntClient): cint {.
+proc internalClientUnload*(client: ClientP; intclient: IntClient): cint {.
     importc: "jack_internal_client_unload".}
 
 #[ DEPRECATED
