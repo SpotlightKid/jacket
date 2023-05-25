@@ -9,9 +9,9 @@ This software is in *alpha status* and has no official release yet.
 
 The majority of JACK client APIs have been wrapped and are functional (see
 [examples]), but some APIs (e.g. threading) still need wrapping. Others, like
-the server control or the deprecated session API, will probably not covered by
-these bindings. While this project is in alpha or beta stage, symbol names may
-still be changed and things moved around before the first public release.
+the server control or the deprecated session API, will probably not be covered
+by these bindings. While this project is in alpha or beta stage, symbol names 
+may still be changed and things moved around before the first public release.
 
 Also, I plan to add a higher-level abstraction on top of the direct mapping
 from Nim procs and types to C functions and types, probably in the form of
