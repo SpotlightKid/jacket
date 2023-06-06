@@ -98,7 +98,7 @@ if jclient.setProcessCallback(processCb, osc.addr) != 0:
     cleanup()
     quit QuitFailure
 
-jclient.onShutdown(shutdownCb, nil)
+jclient.onShutdown(shutdownCb)
 
 # Create output port
 outPort = jclient.portRegister("out_1", JACK_DEFAULT_AUDIO_TYPE, PortIsOutput.ord, 0)

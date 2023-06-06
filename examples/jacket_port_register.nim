@@ -43,7 +43,7 @@ else:
 discard jclient.portRegister("in_1", JACK_DEFAULT_AUDIO_TYPE, PortIsInput.ord, 0)
 discard jclient.portRegister("out_1", JACK_DEFAULT_AUDIO_TYPE, PortIsOutput.ord, 0)
 
-jclient.onShutdown(shutdownCb, nil)
+jclient.onShutdown(shutdownCb)
 
 while not exitSignalled:
     sleep(50)

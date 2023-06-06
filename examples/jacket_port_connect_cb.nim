@@ -60,10 +60,10 @@ else:
 discard jclient.portRegister("in_1", JACK_DEFAULT_AUDIO_TYPE, PortIsInput.ord, 0)
 discard jclient.portRegister("out_1", JACK_DEFAULT_AUDIO_TYPE, PortIsOutput.ord, 0)
 
-if jclient.setPortConnectCallback(portConnected, nil) != 0:
+if jclient.setPortConnectCallback(portConnected) != 0:
     error "Error: could not set JACK port connection callback."
 
-jclient.onShutdown(shutdownCb, nil)
+jclient.onShutdown(shutdownCb)
 
 if jclient.activate() == 0:
     while not exitSignalled:

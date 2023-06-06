@@ -328,51 +328,51 @@ void jack_internal_client_close (const char *client_name)
 
 # ------------------------------- Callbacks -------------------------------
 
-proc setProcessThread*(client: ClientP; threadCallback: ThreadCallback; arg: pointer): cint {.
+proc setProcessThread*(client: ClientP; threadCallback: ThreadCallback; arg: pointer = nil): cint {.
     importc: "jack_set_process_thread".}
 
-proc setThreadInitCallback*(client: ClientP; threadInitCallback: ThreadInitCallback; arg: pointer): cint {.
+proc setThreadInitCallback*(client: ClientP; threadInitCallback: ThreadInitCallback; arg: pointer = nil): cint {.
     importc: "jack_set_thread_init_callback".}
 
-proc onShutdown*(client: ClientP; shutdownCallback: ShutdownCallback; arg: pointer) {.
+proc onShutdown*(client: ClientP; shutdownCallback: ShutdownCallback; arg: pointer = nil) {.
     importc: "jack_on_shutdown".}
 
-proc onInfoShutdown*(client: ClientP; shutdownCallback: InfoShutdownCallback; arg: pointer) {.
+proc onInfoShutdown*(client: ClientP; shutdownCallback: InfoShutdownCallback; arg: pointer = nil) {.
     importc: "jack_on_info_shutdown".}
 
-proc setProcessCallback*(client: ClientP; processCallback: ProcessCallback; arg: pointer): cint {.
+proc setProcessCallback*(client: ClientP; processCallback: ProcessCallback; arg: pointer = nil): cint {.
     importc: "jack_set_process_callback".}
 
-proc setFreewheelCallback*(client: ClientP; freewheelCallback: FreewheelCallback; arg: pointer): cint {.
+proc setFreewheelCallback*(client: ClientP; freewheelCallback: FreewheelCallback; arg: pointer = nil): cint {.
     importc: "jack_set_freewheel_callback".}
 
-proc setBufferSizeCallback*(client: ClientP; bufsizeCallback: BufferSizeCallback; arg: pointer): cint {.
+proc setBufferSizeCallback*(client: ClientP; bufsizeCallback: BufferSizeCallback; arg: pointer = nil): cint {.
     importc: "jack_set_buffer_size_callback".}
 
-proc setSampleRateCallback*(client: ClientP; srateCallback: SampleRateCallback; arg: pointer): cint {.
+proc setSampleRateCallback*(client: ClientP; srateCallback: SampleRateCallback; arg: pointer = nil): cint {.
     importc: "jack_set_sample_rate_callback".}
 
 proc setClientRegistrationCallback*(client: ClientP; registrationCallback: ClientRegistrationCallback;
-                                    arg: pointer): cint {.
+                                    arg: pointer = nil): cint {.
     importc: "jack_set_client_registration_callback".}
 
 proc setPortRegistrationCallback*(client: ClientP; registrationCallback: PortRegistrationCallback;
-                                  arg: pointer): cint {.
+                                  arg: pointer = nil): cint {.
     importc: "jack_set_port_registration_callback".}
 
-proc setPortConnectCallback*(client: ClientP; connectCallback: PortConnectCallback; arg: pointer): cint {.
+proc setPortConnectCallback*(client: ClientP; connectCallback: PortConnectCallback; arg: pointer = nil): cint {.
     importc: "jack_set_port_connect_callback".}
 
-proc setPortRenameCallback*(client: ClientP; renameCallback: PortRenameCallback; arg: pointer): cint {.
+proc setPortRenameCallback*(client: ClientP; renameCallback: PortRenameCallback; arg: pointer = nil): cint {.
     importc: "jack_set_port_rename_callback".}
 
 proc setGraphOrderCallback*(client: ClientP; graphCallback: GraphOrderCallback; a3: pointer): cint {.
     importc: "jack_set_graph_order_callback".}
 
-proc setXrunCallback*(client: ClientP; xrunCallback: XRunCallback; arg: pointer): cint {.
+proc setXrunCallback*(client: ClientP; xrunCallback: XRunCallback; arg: pointer = nil): cint {.
     importc: "jack_set_xrun_callback".}
 
-proc setLatencyCallback*(client: ClientP; latencyCallback: LatencyCallback; arg: pointer): cint {.
+proc setLatencyCallback*(client: ClientP; latencyCallback: LatencyCallback; arg: pointer = nil): cint {.
     importc: "jack_set_latency_callback".}
 
 
@@ -617,7 +617,7 @@ proc getTime*(): Time {.importc: "jack_get_time".}
 proc releaseTimebase*(client: ClientP): cint {.importc: "jack_release_timebase".}
 
 # int jack_set_sync_callback (jack_client_t *client, JackSyncCallback sync_callback, void *arg)
-proc setSyncCallback*(client: ClientP; syncCallback: SyncCallback; arg: pointer): cint {.
+proc setSyncCallback*(client: ClientP; syncCallback: SyncCallback; arg: pointer = nil): cint {.
     importc: "jack_set_sync_callback".}
 
 # int jack_set_sync_timeout (jack_client_t *client, jack_time_t timeout)
@@ -628,7 +628,7 @@ proc setSyncTimeout*(client: ClientP; timeout: Time): cint {.importc: "jack_set_
 #                                 JackTimebaseCallback timebase_callback,
 #                                 void *arg)
 proc setTimebaseCallback*(client: ClientP; conditional: cint; timebaseCallback: TimebaseCallback;
-                          arg: pointer): cint {.
+                          arg: pointer = nil): cint {.
     importc: "jack_set_timebase_callback".}
 
 # int jack_transport_locate (jack_client_t *client, jack_nframes_t frame)
@@ -722,7 +722,7 @@ proc removeProperties*(client: ClientP, subject: Uuid): cint {.importc: "jack_re
 proc removeAllProperties*(client: ClientP): cint {.importc: "jack_remove_all_properties".}
 
 # int jack_set_property_change_callback (jack_client_t* client, JackPropertyChangeCallback callback, void* arg)
-proc setPropertyChangeCallback*(client: ClientP, callback: PropertyChangeCallback, arg: pointer): cint {.
+proc setPropertyChangeCallback*(client: ClientP, callback: PropertyChangeCallback, arg: pointer = nil): cint {.
     importc: "jack_set_property_change_callback".}
 
 

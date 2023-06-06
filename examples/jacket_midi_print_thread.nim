@@ -102,12 +102,12 @@ proc main() =
     createThread(midiEventPrinter, midiEventPrinterProc)
 
     # Register JACK callbacks
-    if jclient.setProcessCallback(processCb, nil) != 0:
+    if jclient.setProcessCallback(processCb) != 0:
         error "Could not set JACK process callback function."
         cleanup()
         quit QuitFailure
 
-    jclient.onShutdown(shutdownCb, nil)
+    jclient.onShutdown(shutdownCb)
 
     # Create output port
     midiPort = jclient.portRegister("midi_in", JACK_DEFAULT_MIDI_TYPE, PortIsInput.ord, 0)
