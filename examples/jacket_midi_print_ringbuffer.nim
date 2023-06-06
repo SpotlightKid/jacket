@@ -73,7 +73,7 @@ proc midiEventPrinterProc() {.thread.} =
 
             if recvBuf[0] <= 3:
                 for i in 0..<recvBuf[0].int:
-                    stdout.write(fmt"{recvBuf[i+1]:#02X} ")
+                    stdout.write(fmt"0x{recvBuf[i+1]:02X} ")
 
                 stdout.write("\n")
                 stdout.flushFile()

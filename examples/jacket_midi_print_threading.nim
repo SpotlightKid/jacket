@@ -67,7 +67,7 @@ proc midiEventPrinterProc() =
             break
         elif event.size <= 3:
             for i in 0..<event.size:
-                stdout.write(fmt"{event.buffer[i]:#02X} ")
+                stdout.write(fmt"0x{event.buffer[i]:02X} ")
 
             stdout.write("\n")
             stdout.flushFile()
