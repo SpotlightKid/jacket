@@ -67,7 +67,7 @@ proc midiEventPrinterProc() {.thread.} =
 
     dataReadyLock.acquire()
 
-    while not exitLoop:
+    while true:
         while not exitLoop and ringbufferReadSpace(rb) >= 4:
             var read = cast[int](ringbufferRead(rb, cast[cstring](recvBuf.addr), 4))
 
@@ -77,6 +77,9 @@ proc midiEventPrinterProc() {.thread.} =
 
                 stdout.write("\n")
                 stdout.flushFile()
+
+        if exitLoop:
+            break
 
         dataReady.wait(dataReadyLock)
 
