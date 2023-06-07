@@ -22,7 +22,6 @@ let rbSize = 128
 var log = newConsoleLogger(when defined(release): lvlInfo else: lvlDebug)
 addHandler(log)
 
-
 proc cleanup() =
     debug "Cleaning up..."
 
@@ -55,11 +54,11 @@ proc errorCb(msg: cstring) {.cdecl.} =
     debug "JACK error: " & $msg
 
 proc signalCb(sig: cint) {.noconv.} =
-    info "Received signal: " & $sig
+    debug "Received signal: " & $sig
     exitSignalled = true
 
 proc shutdownCb(arg: pointer = nil) {.cdecl.} =
-    info "JACK server has shut down."
+    warn "JACK server has shut down."
     exitSignalled = true
 
 proc midiEventPrinterProc() {.thread.} =
@@ -85,7 +84,6 @@ proc midiEventPrinterProc() {.thread.} =
 
     dataReadyLock.release()
 
-
 proc processCb*(nFrames: NFrames, arg: pointer): cint {.cdecl.} =
     var msgBuf: array[4, uint8]
 
@@ -108,7 +106,6 @@ proc processCb*(nFrames: NFrames, arg: pointer): cint {.cdecl.} =
                     if dataReadyLock.tryAcquire():
                         dataReady.signal()
                         dataReadyLock.release()
-
 
 proc main() =
     # Create JACK client
@@ -153,7 +150,6 @@ proc main() =
     cleanup()
     debug "Freeing ringbuffer memory."
     ringbufferFree(rb)
-
 
 when isMainModule:
     main()

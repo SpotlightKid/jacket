@@ -46,11 +46,11 @@ proc errorCb(msg: cstring) {.cdecl.} =
     debug "JACK error: " & $msg
 
 proc signalCb(sig: cint) {.noconv.} =
-    info "Received signal: " & $sig
+    debug "Received signal: " & $sig
     exitSignalled = true
 
 proc shutdownCb(arg: pointer = nil) {.cdecl.} =
-    info "JACK server has shut down."
+    warn "JACK server has shut down."
     exitSignalled = true
 
 proc midiEventPrinterProc() =
