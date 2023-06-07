@@ -61,7 +61,7 @@ type
         SessionID = 0x20
 
 type
-    JackStatus* {.size: sizeof(cint).} = enum
+    JackStatus* {.size: sizeof(cint) pure.} = enum
         Success = 0x00,
         Failure = 0x01,
         InvalidOption = 0x02,
@@ -97,7 +97,7 @@ type
 # Transport
 
 type
-    PositionBits* {.size: sizeof(cint).} = enum
+    PositionBits* {.size: sizeof(cint) pure.} = enum
         PositionBBT = 0x10,
         PositionTimecode = 0x20,
         BBTFrameOffset = 0x40,
@@ -105,7 +105,7 @@ type
         VideoFrameOffset = 0x100,
         TickDouble = 0x200
 
-    TransportState* {.size: sizeof(cint).} = enum
+    TransportState* {.size: sizeof(cint) pure.} = enum
         TransportStopped = 0,
         TransportRolling = 1,
         TransportLooping = 2,
@@ -191,7 +191,7 @@ type
         data*: cstring
         `type`*: cstring
 
-    PropertyChange* {.size: sizeof(cint).} = enum
+    PropertyChange* {.size: sizeof(cint) pure.} = enum
         PropertyCreated,
         PropertyChanged,
         PropertyDeleted
