@@ -11,7 +11,7 @@ The majority of JACK client APIs have been wrapped and are functional (see
 [examples]), but some APIs (e.g. threading) still need wrapping. Others, like
 the server control or the deprecated session API, will probably not be covered
 by these bindings. While this project is in beta stage, symbol names may still
-be changed and things moved around before the first public release.
+be changed and things moved around before the first stable release.
 
 
 ## Installation
