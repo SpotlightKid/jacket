@@ -4,14 +4,13 @@
 #   nimble install threading
 #
 
-import std/[isolation, logging, os, strformat]
+import std/[logging, os, strformat]
 import threading/channels
 import signal
 import jacket
 
 var
     jclient: ClientP
-    event: MidiEvent
     midiPort: PortP
     midiEventChan: Chan[MidiEvent]
     midiEventPrinter: Thread[void]
@@ -32,8 +31,8 @@ proc cleanup() =
         debug "Stopping MIDI event printer thread..."
         # Receiving an invalid event causes receiving thread to wake up and
         # break its endless loop
-        event.size = 0
-        midiEventChan.send(event)
+        let event = MidiEvent(size: 0)
+        discard midiEventChan.trySend(event)
 
     midiEventPrinter.joinThread()
 
