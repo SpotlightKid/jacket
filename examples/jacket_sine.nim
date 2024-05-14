@@ -74,7 +74,7 @@ addHandler(log)
 
 # Create JACK client
 setErrorFunction(errorCb)
-jclient = clientOpen("jacket_sine", NoStartServer.ord or UseExactName.ord, status.addr)
+jclient = clientOpen("jacket_sine", NoStartServer or UseExactName, status.addr)
 debug "JACK server status: " & $status
 
 if jclient == nil:
@@ -101,7 +101,7 @@ if jclient.setProcessCallback(processCb, osc.addr) != 0:
 jclient.onShutdown(shutdownCb)
 
 # Create output port
-outPort = jclient.portRegister("out_1", JACK_DEFAULT_AUDIO_TYPE, PortIsOutput.ord, 0)
+outPort = jclient.portRegister("out_1", JACK_DEFAULT_AUDIO_TYPE, PortIsOutput, 0)
 
 # Activate JACK client ...
 if jclient.activate() == 0:

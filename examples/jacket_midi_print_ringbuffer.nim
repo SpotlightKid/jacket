@@ -110,7 +110,7 @@ proc processCb*(nFrames: NFrames, arg: pointer): cint {.cdecl.} =
 proc main() =
     # Create JACK client
     setErrorFunction(errorCb)
-    jclient = clientOpen("jacket_midi_print", NoStartServer.ord or UseExactName.ord, status.addr)
+    jclient = clientOpen("jacket_midi_print", NoStartServer or UseExactName, status.addr)
     debug "JACK server status: " & $status
 
     if jclient == nil:
@@ -138,7 +138,7 @@ proc main() =
     jclient.onShutdown(shutdownCb)
 
     # Create output port
-    midiPort = jclient.portRegister("midi_in", JACK_DEFAULT_MIDI_TYPE, PortIsInput.ord, 0)
+    midiPort = jclient.portRegister("midi_in", JACK_DEFAULT_MIDI_TYPE, PortIsInput, 0)
 
     # Activate JACK client ...
     if jclient.activate() == 0:

@@ -73,22 +73,21 @@ proc midiEventPrinterProc() =
             stdout.flushFile()
 
 proc processCb*(nFrames: NFrames, arg: pointer): cint {.cdecl.} =
+    var event: MidiEvent
     let inbuf = portGetBuffer(midiPort, nFrames)
     let count = midiGetEventCount(inbuf)
 
     for i in 0..<count:
         if midiEventGet(event.addr, inbuf, i.uint32) == 0:
-            midiEventChan.send(event)
-            # trySend does not work: https://github.com/nim-lang/threading/issues/30
-            #if not midiEventChan.trySend(event):
-            #    warn "MIDI event channel overflow!"
+            if not midiEventChan.trySend(event):
+                warn "MIDI event channel overflow!"
 
 proc main() =
     addHandler(log)
 
     # Create JACK client
     setErrorFunction(errorCb)
-    jclient = clientOpen("jacket_midi_print", NoStartServer.ord or UseExactName.ord, status.addr)
+    jclient = clientOpen("jacket_midi_print", NoStartServer or UseExactName, status.addr)
     debug "JACK server status: " & $status
 
     if jclient == nil:
@@ -115,7 +114,7 @@ proc main() =
     jclient.onShutdown(shutdownCb)
 
     # Create output port
-    midiPort = jclient.portRegister("midi_in", JACK_DEFAULT_MIDI_TYPE, PortIsInput.ord, 0)
+    midiPort = jclient.portRegister("midi_in", JACK_DEFAULT_MIDI_TYPE, PortIsInput, 0)
 
     # Activate JACK client ...
     if jclient.activate() == 0:

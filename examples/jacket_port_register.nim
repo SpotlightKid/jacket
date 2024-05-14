@@ -28,7 +28,7 @@ proc shutdownCb(arg: pointer = nil) {.cdecl.} =
 
 addHandler(log)
 setErrorFunction(errorCb)
-jclient = clientOpen("jacket_port_register", NoStartServer.ord or UseExactName.ord, status.addr)
+jclient = clientOpen("jacket_port_register", NoStartServer or UseExactName, status.addr)
 debug "JACK server status: " & $status
 
 if jclient == nil:
@@ -40,8 +40,8 @@ when defined(windows):
 else:
     setSignalProc(signalCb, SIGABRT, SIGHUP, SIGINT, SIGQUIT, SIGTERM)
 
-discard jclient.portRegister("in_1", JACK_DEFAULT_AUDIO_TYPE, PortIsInput.ord, 0)
-discard jclient.portRegister("out_1", JACK_DEFAULT_AUDIO_TYPE, PortIsOutput.ord, 0)
+discard jclient.portRegister("in_1", JACK_DEFAULT_AUDIO_TYPE, PortIsInput, 0)
+discard jclient.portRegister("out_1", JACK_DEFAULT_AUDIO_TYPE, PortIsOutput, 0)
 
 jclient.onShutdown(shutdownCb)
 

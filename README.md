@@ -58,10 +58,10 @@ proc processCb(nFrames: NFrames, arg: pointer): cint {.cdecl.} =
         outbuf[i] = inpbuf[i]
 
 # Create JACK Client ptr
-jackClient = clientOpen("passthru", NullOption.ord, status.addr)
+jackClient = clientOpen("passthru", NullOption, status.addr)
 # Register audio input and output ports
-inpPort = jackClient.portRegister("in_1", JACK_DEFAULT_AUDIO_TYPE, PortIsInput.ord, 0)
-outPort = jackClient.portRegister("out_1", JACK_DEFAULT_AUDIO_TYPE, PortIsOutput.ord, 0)
+inpPort = jackClient.portRegister("in_1", JACK_DEFAULT_AUDIO_TYPE, PortIsInput, 0)
+outPort = jackClient.portRegister("out_1", JACK_DEFAULT_AUDIO_TYPE, PortIsOutput, 0)
 # Set JACK callbacks
 jackClient.onShutdown(shutdownCb)
 discard jackClient.setProcessCallback(processCb, nil)

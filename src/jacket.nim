@@ -232,6 +232,12 @@ type
     PropertyChangeCallback* = proc (subject: Uuid, key: cstring, change: PropertyChange, arg: pointer) {.cdecl.}
 
 
+# ------------------------- Converters for Enums --------------------------
+
+converter jackIntEnumToCInt*[T: JackOptions | JackStatus | LatencyCallbackMode |
+    PositionBits | TransportState | PropertyChange](x: T): cint = x.ord.cint
+converter portFlagsToCULong*(x: PortFlags): culong = x.ord.culong
+
 # ----------------------------- Version info ------------------------------
 
 # void jack_get_version(int *major_ptr, int *minor_ptr, int *micro_ptr, int *proto_ptr)
@@ -739,33 +745,33 @@ proc setInfoFunction*(infoCallback: InfoCallback) {.importc: "jack_set_info_func
 
 proc getJackStatusErrorString*(status: cint): string =
     # Get JACK error status as string.
-    if status == Success.ord:
+    if status == Success:
         return ""
 
-    if status == Failure.ord:
+    if status == Failure:
         # Only include this generic message if no other error status is set
         result = "Overall operation failed"
-    if (status and InvalidOption.ord) > 0:
+    if (status and InvalidOption) > 0:
         result.add("\nThe operation contained an invalid and unsupported option")
-    if (status and NameNotUnique.ord) > 0:
+    if (status and NameNotUnique) > 0:
         result.add("\nThe desired client name was not unique")
-    if (status and ServerStarted.ord) > 0:
+    if (status and ServerStarted) > 0:
         result.add("\nThe JACK server was started as a result of this operation")
-    if (status and ServerFailed.ord) > 0:
+    if (status and ServerFailed) > 0:
         result.add("\nUnable to connect to the JACK server")
-    if (status and ServerError.ord) > 0:
+    if (status and ServerError) > 0:
         result.add("\nCommunication error with the JACK server")
-    if (status and NoSuchClient.ord) > 0:
+    if (status and NoSuchClient) > 0:
         result.add("\nRequested client does not exist")
-    if (status and LoadFailure.ord) > 0:
+    if (status and LoadFailure) > 0:
         result.add("\nUnable to load internal client")
-    if (status and InitFailure.ord) > 0:
+    if (status and InitFailure) > 0:
         result.add("\nUnable to initialize client")
-    if (status and ShmFailure.ord) > 0:
+    if (status and ShmFailure) > 0:
         result.add("\nUnable to access shared memory")
-    if (status and VersionError.ord) > 0:
+    if (status and VersionError) > 0:
         result.add("\nClient's protocol version does not match")
-    if (status and BackendError.ord) > 0:
+    if (status and BackendError) > 0:
         result.add("\nBackend Error")
-    if (status and ClientZombie.ord) > 0:
+    if (status and ClientZombie) > 0:
         result.add("\nClient is being shutdown against its will")

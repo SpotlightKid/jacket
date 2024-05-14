@@ -45,7 +45,7 @@ proc portConnected(portA: PortId; portB: PortId; connect: cint; arg: pointer) {.
 
 addHandler(log)
 setErrorFunction(errorCb)
-jclient = clientOpen("jacket_port_connect_cb", NoStartServer.ord, status.addr)
+jclient = clientOpen("jacket_port_connect_cb", NoStartServer, status.addr)
 debug "JACK server status: " & $status
 
 if jclient == nil:
@@ -57,8 +57,8 @@ when defined(windows):
 else:
     setSignalProc(signalCb, SIGABRT, SIGHUP, SIGINT, SIGQUIT, SIGTERM)
 
-discard jclient.portRegister("in_1", JACK_DEFAULT_AUDIO_TYPE, PortIsInput.ord, 0)
-discard jclient.portRegister("out_1", JACK_DEFAULT_AUDIO_TYPE, PortIsOutput.ord, 0)
+discard jclient.portRegister("in_1", JACK_DEFAULT_AUDIO_TYPE, PortIsInput, 0)
+discard jclient.portRegister("out_1", JACK_DEFAULT_AUDIO_TYPE, PortIsOutput, 0)
 
 if jclient.setPortConnectCallback(portConnected) != 0:
     error "Error: could not set JACK port connection callback."

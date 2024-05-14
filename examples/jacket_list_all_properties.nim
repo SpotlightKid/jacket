@@ -14,7 +14,7 @@ proc errorCb(msg: cstring) {.cdecl.} =
 
 addHandler(log)
 setErrorFunction(errorCb)
-let jclient = clientOpen("jacket_property", NullOption.ord, status.addr)
+let jclient = clientOpen("jacket_property", NullOption, status.addr)
 debug "JACK server status: " & $status
 
 if jclient == nil:
