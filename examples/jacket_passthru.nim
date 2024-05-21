@@ -52,7 +52,7 @@ debug "JACK server status: " & $status
 
 if jclient == nil:
     error getJackStatusErrorString(status)
-    quit 1
+    quit QuitFailure
 
 # Register audio input and output ports
 inpPort = jclient.portRegister("in_1", JACK_DEFAULT_AUDIO_TYPE, PortIsInput, 0)
