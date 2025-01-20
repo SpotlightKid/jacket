@@ -9,7 +9,7 @@ aka **libjack**.
 This software is in *beta status*.
 
 The majority of JACK client API functions have been wrapped and are functional
-(see[examples]), but some API parts (e.g. threading) still need wrapping.
+(see [examples]), but some API parts (e.g. threading) still need wrapping.
 Others, like the server control or the deprecated session API, will probably
 not be covered by these bindings. While this project is in beta stage, symbol
 names may still be changed and things moved around before the first stable
@@ -81,12 +81,12 @@ jackClient.clientClose()
 
 ## License
 
-This software is released under the *MIT License*. See the file
+This software is released under the **MIT License**. See the file
 [LICENSE.md](./LICENSE.md) for more information.
 
 Please note that the JACK client library (libjack), which this project wraps,
 is licensed under the [LGPL-2.1]. This wrapper does not statically or
-dynamically link to libjack at build time, but only loads it via `dynlib` at
+dynamically link to libjack at build time, but only loads it via [dynlib] at
 run-time.
 
 Software using this wrapper is, in the opinion of its author, not considered a
@@ -97,11 +97,12 @@ professional legal counsel when in doubt.
 
 ## Author
 
-*jacket* is written by [Christopher Arndt].
+**jacket** is written by [Christopher Arndt].
 
 
 [C API]: https://jackaudio.org/api/
 [Christopher Arndt]: mailto:info@chrisarndt.de
+[dynlib]: https://nim-lang.org/docs/manual.html#foreign-function-interface-dynlib-pragma-for-import
 [examples]: ./examples
 [JACK]: https://jackaudio.org/
 [LGPL-2.1]: https://spdx.org/licenses/LGPL-2.1-or-later.html
