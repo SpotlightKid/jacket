@@ -6,16 +6,16 @@ import signal
 import jacket
 
 var
-    jclient: ClientP
+    jclient: Client
     status: cint
     exitSignalled: bool = false
-    inpPort, outPort: PortP
+    inpPort, outPort: Port
     log = newConsoleLogger(when defined(release): lvlInfo else: lvlDebug)
 
 type JackBufferP = ptr UncheckedArray[DefaultAudioSample]
 
 proc errorCb(msg: cstring) {.cdecl.} =
-    # Suppress verbose JACK error messages when server is not available by 
+    # Suppress verbose JACK error messages when server is not available by
     # default. Compile in non-release mode or pass ``lvlDebug`` or lower
     # when creating the logger above to enable them.
     debug "JACK error: " & $msg
@@ -23,8 +23,8 @@ proc errorCb(msg: cstring) {.cdecl.} =
 proc cleanup(sig: cint = 0) =
     debug "Cleaning up..."
     if jclient != nil:
-        discard jclient.deactivate()
-        discard jclient.clientClose()
+        jclient.deactivate()
+        jclient.clientClose()
         jclient = nil
 
 proc signalCb(sig: cint) {.noconv.} =
@@ -55,8 +55,8 @@ if jclient == nil:
     quit QuitFailure
 
 # Register audio input and output ports
-inpPort = jclient.portRegister("in_1", JACK_DEFAULT_AUDIO_TYPE, PortIsInput, 0)
-outPort = jclient.portRegister("out_1", JACK_DEFAULT_AUDIO_TYPE, PortIsOutput, 0)
+inpPort = jclient.portRegister("in_1", JackDefaultAudioType, PortIsInput, 0)
+outPort = jclient.portRegister("out_1", JackDefaultAudioType, PortIsOutput, 0)
 
 # Register JACK callbacks
 jclient.onShutdown(shutdownCb)

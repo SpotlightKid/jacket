@@ -3,12 +3,12 @@ import jacket
 
 var
     status: cint
-    descs: ptr UncheckedArray[Description]
+    descs: ptr UncheckedArray[DescriptionT]
 
 var log = newConsoleLogger(when defined(release): lvlInfo else: lvlDebug)
 
 proc errorCb(msg: cstring) {.cdecl.} =
-    # Suppress verbose JACK error messages when server is not available by 
+    # Suppress verbose JACK error messages when server is not available by
     # default. Pass ``lvlAll`` when creating the logger to enable them.
     debug "JACK error: " & $msg
 
@@ -40,4 +40,4 @@ if numDescs != -1:
 else:
     error "Could not get properties!"
 
-discard jclient.clientClose
+jclient.clientClose()

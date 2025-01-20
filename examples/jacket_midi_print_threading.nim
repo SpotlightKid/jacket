@@ -10,9 +10,9 @@ import signal
 import jacket
 
 var
-    jclient: ClientP
-    midiPort: PortP
-    midiEventChan: Chan[MidiEvent]
+    jclient: Client
+    midiPort: Port
+    midiEventChan: Chan[MidiEventT]
     midiEventPrinter: Thread[void]
     status: cint
     exitSignalled: bool = false
@@ -25,20 +25,20 @@ proc cleanup() =
 
     if jclient != nil:
         debug "Deactivating JACK client..."
-        discard jclient.deactivate()
+        jclient.deactivate()
 
     if midiEventPrinter.running:
         debug "Stopping MIDI event printer thread..."
         # Receiving an invalid event causes receiving thread to wake up and
         # break its endless loop
-        let event = MidiEvent(size: 0)
+        let event = MidiEventT(size: 0)
         discard midiEventChan.trySend(event)
 
     midiEventPrinter.joinThread()
 
     if jclient != nil:
         debug "Closing JACK client..."
-        discard jclient.clientClose()
+        jclient.clientClose()
         jclient = nil
 
     debug "Bye."
@@ -57,7 +57,7 @@ proc shutdownCb(arg: pointer = nil) {.cdecl.} =
     exitSignalled = true
 
 proc midiEventPrinterProc() =
-    var event: MidiEvent
+    var event: MidiEventT
 
     while true:
         midiEventChan.recv(event)
@@ -72,7 +72,7 @@ proc midiEventPrinterProc() =
             stdout.flushFile()
 
 proc processCb*(nFrames: NFrames, arg: pointer): cint {.cdecl.} =
-    var event: MidiEvent
+    var event: MidiEventT
     let inbuf = portGetBuffer(midiPort, nFrames)
     let count = midiGetEventCount(inbuf)
 
@@ -101,7 +101,7 @@ proc main() =
 
     # Set up a thread, which receives MIDI events from process callback via a
     # Channel and prints them without danger of blocking the process callback
-    midiEventChan = newChan[MidiEvent]()
+    midiEventChan = newChan[MidiEventT]()
     createThread(midiEventPrinter, midiEventPrinterProc)
 
     # Register JACK callbacks

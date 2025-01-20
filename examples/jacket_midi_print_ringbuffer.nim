@@ -5,10 +5,10 @@ import signal
 import jacket
 
 var
-    jclient: ClientP
-    event: MidiEvent
-    midiPort: PortP
-    rb: RingbufferP
+    jclient: Client
+    event: MidiEventT
+    midiPort: Port
+    rb: Ringbuffer
     midiEventPrinter: Thread[void]
     status: cint
     exitSignalled: bool = false
@@ -27,7 +27,7 @@ proc cleanup() =
 
     if jclient != nil:
         debug "Deactivating JACK client..."
-        discard jclient.deactivate()
+        jclient.deactivate()
 
     if midiEventPrinter.running:
         debug "Stopping MIDI event printer thread..."
@@ -42,7 +42,7 @@ proc cleanup() =
 
     if jclient != nil:
         debug "Closing JACK client..."
-        discard jclient.clientClose()
+        jclient.clientClose()
         jclient = nil
 
     debug fmt"Buffer overruns: {overruns}"
@@ -68,7 +68,7 @@ proc midiEventPrinterProc() {.thread.} =
 
     while true:
         while not exitLoop and ringbufferReadSpace(rb) >= 4:
-            var read = cast[int](ringbufferRead(rb, cast[cstring](recvBuf.addr), 4))
+            discard ringbufferRead(rb, cast[cstring](recvBuf.addr), 4)
 
             if recvBuf[0] <= 3:
                 for i in 0..<recvBuf[0].int:
@@ -138,7 +138,7 @@ proc main() =
     jclient.onShutdown(shutdownCb)
 
     # Create output port
-    midiPort = jclient.portRegister("midi_in", JACK_DEFAULT_MIDI_TYPE, PortIsInput, 0)
+    midiPort = jclient.portRegister("midi_in", JackDefaultMidiType, PortIsInput, 0)
 
     # Activate JACK client ...
     if jclient.activate() == 0:

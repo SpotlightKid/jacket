@@ -2,8 +2,8 @@ import std/[logging, math, os]
 import signal
 import jacket
 
-var jclient: ClientP
-var outPort: PortP
+var jclient: Client
+var outPort: Port
 var status: cint
 var exitSignalled: bool = false
 var log = newConsoleLogger(when defined(release): lvlInfo else: lvlDebug)
@@ -26,7 +26,7 @@ type
 proc initSineOsc(sr: float, freq: float): SineOsc =
     let phsInc = twoPi / tableSize
     var phase = 0.0
-    
+
     for i in 0 ..< tableSize:
         result.waveform[i] = sin(phase)
         phase += phsInc
@@ -37,15 +37,15 @@ proc initSineOsc(sr: float, freq: float): SineOsc =
 proc tick(osc: SineOscP): float =
     result = osc.waveform[int(osc.phase)]
     osc.phase += osc.idxInc;
-    
+
     if osc.phase >= tableSize:
         osc.phase -= tableSize
 
 proc cleanup() =
     debug "Cleaning up..."
     if jclient != nil:
-        discard jclient.deactivate()
-        discard jclient.clientClose()
+        jclient.deactivate()
+        jclient.clientClose()
         jclient = nil
 
 proc errorCb(msg: cstring) {.cdecl.} =
@@ -61,7 +61,7 @@ proc shutdownCb(arg: pointer = nil) {.cdecl.} =
     warn "JACK server has shut down."
     exitSignalled = true
 
-proc processCb(nFrames: NFrames, arg: pointer): cint {.cdecl.} = 
+proc processCb(nFrames: NFrames, arg: pointer): cint {.cdecl.} =
     var outbuf = cast[JackBufferP](portGetBuffer(outPort, nFrames))
     let osc = cast[SineOscP](arg)
 
@@ -101,7 +101,7 @@ if jclient.setProcessCallback(processCb, osc.addr) != 0:
 jclient.onShutdown(shutdownCb)
 
 # Create output port
-outPort = jclient.portRegister("out_1", JACK_DEFAULT_AUDIO_TYPE, PortIsOutput, 0)
+outPort = jclient.portRegister("out_1", JackDefaultAudioType, PortIsOutput, 0)
 
 # Activate JACK client ...
 if jclient.activate() == 0:
