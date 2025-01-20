@@ -2,9 +2,9 @@ import std/[logging, os, strutils]
 import signal
 import jacket
 
-var jclient: ClientP
-var event: MidiEvent
-var midiPort: PortP
+var jclient: Client
+var event: MidiEventT
+var midiPort: Port
 var status: cint
 var exitSignalled: bool = false
 var log = newConsoleLogger(when defined(release): lvlInfo else: lvlDebug)
@@ -13,8 +13,8 @@ var log = newConsoleLogger(when defined(release): lvlInfo else: lvlDebug)
 proc cleanup() =
     debug "Cleaning up..."
     if jclient != nil:
-        discard jclient.deactivate()
-        discard jclient.clientClose()
+        jclient.deactivate()
+        jclient.clientClose()
         jclient = nil
 
 proc errorCb(msg: cstring) {.cdecl.} =
@@ -30,7 +30,7 @@ proc shutdownCb(arg: pointer = nil) {.cdecl.} =
     warn "JACK server has shut down."
     exitSignalled = true
 
-proc printMidiEvent(event: var MidiEvent) =
+proc printMidiEvent(event: var MidiEventT) =
     if event.size <= 3:
         for i in 0..<event.size:
             stdout.write(event.buffer[i].toHex)
@@ -74,7 +74,7 @@ proc main() =
     jclient.onShutdown(shutdownCb)
 
     # Create output port
-    midiPort = jclient.portRegister("midi_in", JACK_DEFAULT_MIDI_TYPE, PortIsInput, 0)
+    midiPort = jclient.portRegister("midi_in", JackDefaultMidiType, PortIsInput, 0)
 
     # Activate JACK client ...
     if jclient.activate() == 0:

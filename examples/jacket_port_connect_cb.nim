@@ -2,7 +2,7 @@ import std/[logging, os]
 import jacket
 import signal
 
-var jclient: ClientP
+var jclient: Client
 var status: cint
 var exitSignalled: bool = false
 var log = newConsoleLogger(when defined(release): lvlInfo else: lvlDebug)
@@ -10,8 +10,8 @@ var log = newConsoleLogger(when defined(release): lvlInfo else: lvlDebug)
 proc cleanup(sig: cint = 0) =
     debug "Cleaning up..."
     if jclient != nil:
-        discard jclient.deactivate()
-        discard jclient.clientClose()
+        jclient.deactivate()
+        jclient.clientClose()
         jclient = nil
 
 proc errorCb(msg: cstring) {.cdecl.} =
@@ -30,7 +30,7 @@ proc shutdownCb(arg: pointer = nil) {.cdecl.} =
 proc portConnected(portA: PortId; portB: PortId; connect: cint; arg: pointer) {.cdecl.} =
     let portAPtr = jclient.portById(portA)
     let portBPtr = jclient.portById(portB)
-    
+
     if portAPtr != nil:
         echo("Port A: ", portName(portAPtr))
     else:
@@ -40,7 +40,7 @@ proc portConnected(portA: PortId; portB: PortId; connect: cint; arg: pointer) {.
         echo("Port B: ", portName(portBPtr))
     else:
         echo "Port B: <unknown>"
-        
+
     echo("Action: ", if connect > 0: "connect" else: "disconnect")
 
 addHandler(log)
@@ -57,8 +57,8 @@ when defined(windows):
 else:
     setSignalProc(signalCb, SIGABRT, SIGHUP, SIGINT, SIGQUIT, SIGTERM)
 
-discard jclient.portRegister("in_1", JACK_DEFAULT_AUDIO_TYPE, PortIsInput, 0)
-discard jclient.portRegister("out_1", JACK_DEFAULT_AUDIO_TYPE, PortIsOutput, 0)
+discard jclient.portRegister("in_1", JackDefaultAudioType, PortIsInput, 0)
+discard jclient.portRegister("out_1", JackDefaultAudioType, PortIsOutput, 0)
 
 if jclient.setPortConnectCallback(portConnected) != 0:
     error "Error: could not set JACK port connection callback."

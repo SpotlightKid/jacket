@@ -2,15 +2,15 @@ import std/[logging, strformat]
 import jacket
 
 var
-    jclient: ClientP
+    jclient: Client
     status: cint
-    pos: Position
+    pos: PositionT
     transportState: TransportState
 
 var log = newConsoleLogger(when defined(release): lvlInfo else: lvlDebug)
 
 proc errorCb(msg: cstring) {.cdecl.} =
-    # Suppress verbose JACK error messages when server is not available by 
+    # Suppress verbose JACK error messages when server is not available by
     # default. Pass ``lvlAll`` when creating the logger to enable them.
     debug "JACK error: " & $msg
 
@@ -51,4 +51,4 @@ of TransportStarting:
 else:
     echo "Unknown JACK transport state."
 
-discard jclient.clientClose
+jclient.clientClose()

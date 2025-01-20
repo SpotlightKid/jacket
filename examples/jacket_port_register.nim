@@ -2,7 +2,7 @@ import std/[logging, os]
 import signal
 import jacket
 
-var jclient: ClientP
+var jclient: Client
 var status: cint
 var exitSignalled: bool = false
 var log = newConsoleLogger(when defined(release): lvlInfo else: lvlDebug)
@@ -10,7 +10,7 @@ var log = newConsoleLogger(when defined(release): lvlInfo else: lvlDebug)
 proc cleanup(sig: cint = 0) =
     debug "Cleaning up..."
     if jclient != nil:
-        discard jclient.clientClose()
+        jclient.clientClose()
         jclient = nil
 
 proc errorCb(msg: cstring) {.cdecl.} =
@@ -40,8 +40,8 @@ when defined(windows):
 else:
     setSignalProc(signalCb, SIGABRT, SIGHUP, SIGINT, SIGQUIT, SIGTERM)
 
-discard jclient.portRegister("in_1", JACK_DEFAULT_AUDIO_TYPE, PortIsInput, 0)
-discard jclient.portRegister("out_1", JACK_DEFAULT_AUDIO_TYPE, PortIsOutput, 0)
+discard jclient.portRegister("in_1", JackDefaultAudioType, PortIsInput, 0)
+discard jclient.portRegister("out_1", JackDefaultAudioType, PortIsOutput, 0)
 
 jclient.onShutdown(shutdownCb)
 
