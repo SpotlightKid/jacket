@@ -2,18 +2,17 @@
 
 # Possible names/install locations of libjack, according to:
 # https://github.com/x42/weakjack/blob/master/weak_libjack.c#L108
-proc getJackLibName: string =
-    when system.hostOS == "windows":
-        when sizeof(int) == 4:
-            result = "libjack.dll"
-        else:
-            result = "libjack64.dll"
-    elif system.hostOS == "macosx":
-        result = "(|/usr/local/lib/|/opt/homebrew/lib/|/opt/local/lib/)libjack.dylib"
+when defined(windows):
+    when sizeof(int) == 4:
+        const soname = "(|lib)jack.dll"
     else:
-        result = "libjack.so.0"
+        const soname = "(|lib)jack64.dll"
+elif defined(macosx):
+    const soname = "(|/usr/local/lib/|/opt/homebrew/lib/|/opt/homebrew/opt/jack/lib/|/opt/local/lib/)libjack.dylib"
+else:
+    const soname = "libjack.so.0"
 
-{.push dynlib: getJackLibName().}
+{.push dynlib: soname.}
 
 # ------------------------------ Constants --------------------------------
 
