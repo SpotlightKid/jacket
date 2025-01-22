@@ -11,6 +11,9 @@ srcDir = "src"
 
 requires "nim >= 1.6.0"
 
+taskrequires "examples", "threading"
+taskrequires "examples_debug", "threading"
+
 let examples = @[
     "info",
     "list_all_properties",
