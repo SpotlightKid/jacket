@@ -1,0 +1,58 @@
+name: Run tests and build examples
+on: [push, pull_request]
+env:
+  nim_version: "2.2.0"
+jobs:
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+        #os: [ubuntu-latest, macos-latest, windows-latest]
+
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - name: Check out sources
+        uses: actions/checkout@v4
+      - name: Nim Runtime Cache
+        id: cache-nim
+        uses: actions/cache@v4
+        with:
+          path: ".nim_runtime"
+          key: ${{ runner.os }}-nim-${{ env.nim_version }}
+      - name: Install Nim
+        id: install-nim
+        if: ${{ hashFiles('.nim_runtime/bin/nim*') == '' }}
+        uses: jiro4989/setup-nim-action@v2
+        with:
+          nim-version: ${{ env.nim_version }}
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Set PATH for Unix
+        if: ${{ runner.os != 'Windows' && steps.install-nim.outcome == 'skipped' }}
+        shell: bash
+        run: |
+          echo "$(pwd)/.nim_runtime/bin" >> "$GITHUB_PATH"
+          echo "$HOME/.nimble/bin" >> "$GITHUB_PATH"
+      - name: Set PATH for Windows
+        if: ${{ runner.os == 'Windows' && steps.install-nim.outcome == 'skipped' }}
+        shell: pwsh
+        run: |
+          echo "$(Get-Location)\.nim_runtime\bin" >> $Env:GITHUB_PATH
+          mkdir -Force ~\.nimble\bin
+          (Resolve-Path ~\.nimble\bin).Path >> $Env:GITHUB_PATH
+      - name: Install dependency packages (jack)
+        uses: ConorMacBride/install-package@v1
+        with:
+          brew: jack pcre
+          apt: libjack-jackd2-dev libpcre3-dev
+          choco: jack
+      - name: Update PATH (Windows)
+        if: runner.os == 'Windows'
+        run: Add-Content $env:GITHUB_PATH "C:\Program Files\jack\bin"
+      - name: Run tests
+        run: nimble test -y
+      - name: Build examples (debug)
+        run: nimble examples_debug
+      - name: Build examples (release)
+        run: nimble examples
