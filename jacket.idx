@@ -1,0 +1,179 @@
+nimTitle	jacket	jacket.html	module src/jacket		0
+nim	JackMaxFrames	jacket.html#JackMaxFrames	const JackMaxFrames		20
+nim	JackLoadInitLimit	jacket.html#JackLoadInitLimit	const JackLoadInitLimit		21
+nim	JackDefaultAudioType	jacket.html#JackDefaultAudioType	const JackDefaultAudioType		22
+nim	JackDefaultMidiType	jacket.html#JackDefaultMidiType	const JackDefaultMidiType		23
+nim	Time	jacket.html#Time	type Time		28
+nim	NFrames	jacket.html#NFrames	type NFrames		29
+nim	Uuid	jacket.html#Uuid	type Uuid		31
+nim	PortId	jacket.html#PortId	type PortId		32
+nim	PortTypeId	jacket.html#PortTypeId	type PortTypeId		33
+nim	DefaultAudioSample	jacket.html#DefaultAudioSample	type DefaultAudioSample		34
+nim	Client	jacket.html#Client	type Client		38
+nim	Port	jacket.html#Port	type Port		40
+nim	MidiData	jacket.html#MidiData	type MidiData		43
+nim	MidiEventT	jacket.html#MidiEventT	object MidiEventT		44
+nim	MidiEvent	jacket.html#MidiEvent	type MidiEvent		48
+nim	JackOptions	jacket.html#JackOptions	enum JackOptions		51
+nim	JackStatus	jacket.html#JackStatus	enum JackStatus		61
+nim	PortFlags	jacket.html#PortFlags	enum PortFlags		78
+nim	LatencyRange	jacket.html#LatencyRange	object LatencyRange		86
+nim	LatencyCallbackMode	jacket.html#LatencyCallbackMode	enum LatencyCallbackMode		90
+nim	PositionBits	jacket.html#PositionBits	enum PositionBits		97
+nim	TransportState	jacket.html#TransportState	enum TransportState		105
+nim	PositionT	jacket.html#PositionT	object PositionT		113
+nim	Position	jacket.html#Position	type Position		135
+nim	JackPositionMask	jacket.html#JackPositionMask	const JackPositionMask		168
+nim	ExtendedTimeInfo	jacket.html#ExtendedTimeInfo	const ExtendedTimeInfo		169
+nim	JackTickDouble	jacket.html#JackTickDouble	const JackTickDouble		170
+nim	RingbufferDataT	jacket.html#RingbufferDataT	object RingbufferDataT		175
+nim	RingbufferData	jacket.html#RingbufferData	type RingbufferData		178
+nim	Ringbuffer	jacket.html#Ringbuffer	type Ringbuffer		181
+nim	Property	jacket.html#Property	object Property		186
+nim	PropertyChange	jacket.html#PropertyChange	enum PropertyChange		191
+nim	DescriptionT	jacket.html#DescriptionT	object DescriptionT		196
+nim	Description	jacket.html#Description	type Description		202
+nim	ProcessCallback	jacket.html#ProcessCallback	type ProcessCallback		207
+nim	ThreadCallback	jacket.html#ThreadCallback	type ThreadCallback		208
+nim	ThreadInitCallback	jacket.html#ThreadInitCallback	type ThreadInitCallback		209
+nim	GraphOrderCallback	jacket.html#GraphOrderCallback	type GraphOrderCallback		210
+nim	XRunCallback	jacket.html#XRunCallback	type XRunCallback		211
+nim	BufferSizeCallback	jacket.html#BufferSizeCallback	type BufferSizeCallback		212
+nim	SampleRateCallback	jacket.html#SampleRateCallback	type SampleRateCallback		213
+nim	PortRegistrationCallback	jacket.html#PortRegistrationCallback	type PortRegistrationCallback		214
+nim	ClientRegistrationCallback	jacket.html#ClientRegistrationCallback	type ClientRegistrationCallback		215
+nim	PortConnectCallback	jacket.html#PortConnectCallback	type PortConnectCallback		216
+nim	PortRenameCallback	jacket.html#PortRenameCallback	type PortRenameCallback		217
+nim	FreewheelCallback	jacket.html#FreewheelCallback	type FreewheelCallback		218
+nim	ShutdownCallback	jacket.html#ShutdownCallback	type ShutdownCallback		219
+nim	InfoShutdownCallback	jacket.html#InfoShutdownCallback	type InfoShutdownCallback		220
+nim	LatencyCallback	jacket.html#LatencyCallback	type LatencyCallback		221
+nim	InfoCallback	jacket.html#InfoCallback	type InfoCallback		222
+nim	ErrorCallback	jacket.html#ErrorCallback	type ErrorCallback		223
+nim	SyncCallback	jacket.html#SyncCallback	type SyncCallback		225
+nim	TimebaseCallback	jacket.html#TimebaseCallback	type TimebaseCallback		226
+nim	PropertyChangeCallback	jacket.html#PropertyChangeCallback	type PropertyChangeCallback		229
+nim	jackIntEnumToCInt	jacket.html#jackIntEnumToCInt.c,T	converter jackIntEnumToCInt[T: JackOptions | JackStatus | LatencyCallbackMode |\n    PositionBits |\n    TransportState |\n    PropertyChange](x: T): cint		234
+nim	portFlagsToCULong	jacket.html#portFlagsToCULong.c,PortFlags	converter portFlagsToCULong(x: PortFlags): culong		236
+nim	getVersion	jacket.html#getVersion,ptr.cint,ptr.cint,ptr.cint,ptr.cint	proc getVersion(major: ptr cint; minor: ptr cint; micro: ptr cint; proto: ptr cint)		241
+nim	getVersionString	jacket.html#getVersionString	proc getVersionString(): cstring		244
+nim	free	jacket.html#free,pointer	proc free(ptr: pointer)		250
+nim	clientOpen	jacket.html#clientOpen,cstring,cint,ptr.cint	proc clientOpen(clientName: cstring; options: cint; status: ptr cint): Client		258
+nim	clientClose	jacket.html#clientClose,Client	proc clientClose(client: Client): cint		262
+nim	clientNameSize	jacket.html#clientNameSize	proc clientNameSize(): cint		265
+nim	getClientName	jacket.html#getClientName,Client	proc getClientName(client: Client): cstring		268
+nim	getUuidForClientName	jacket.html#getUuidForClientName,Client,cstring	proc getUuidForClientName(client: Client; clientName: cstring): cstring		271
+nim	getClientNameByUuid	jacket.html#getClientNameByUuid,Client,cstring	proc getClientNameByUuid(client: Client; clientUuid: cstring): cstring		275
+nim	activate	jacket.html#activate,Client	proc activate(client: Client): cint		279
+nim	deactivate	jacket.html#deactivate,Client	proc deactivate(client: Client): cint		282
+nim	getClientPid	jacket.html#getClientPid,cstring	proc getClientPid(name: cstring): cint		285
+nim	isRealtime	jacket.html#isRealtime,Client	proc isRealtime(client: Client): cint		292
+nim	cycleWait	jacket.html#cycleWait,Client	proc cycleWait(client: Client): NFrames		295
+nim	cycleSignal	jacket.html#cycleSignal,Client,cint	proc cycleSignal(client: Client; status: cint)		298
+nim	getInternalClientName	jacket.html#getInternalClientName,Client,IntClient	proc getInternalClientName(client: Client; intclient: IntClient): cstring		308
+nim	internalClientHandle	jacket.html#internalClientHandle,Client,cstring,ptr.cint	proc internalClientHandle(client: Client; clientName: cstring; status: ptr cint): IntClient		313
+nim	internalClientLoad	jacket.html#internalClientLoad,Client,cstring,cint,ptr.cint	proc internalClientLoad(client: Client; clientName: cstring; options: cint;\n                   status: ptr cint): IntClient		318
+nim	internalClientUnload	jacket.html#internalClientUnload,Client,IntClient	proc internalClientUnload(client: Client; intclient: IntClient): cint		323
+nim	onShutdown	jacket.html#onShutdown,Client,ShutdownCallback,pointer	proc onShutdown(client: Client; shutdownCallback: ShutdownCallback;\n           arg: pointer = nil)		334
+nim	onInfoShutdown	jacket.html#onInfoShutdown,Client,InfoShutdownCallback,pointer	proc onInfoShutdown(client: Client; shutdownCallback: InfoShutdownCallback;\n               arg: pointer = nil)		337
+nim	setProcessThread	jacket.html#setProcessThread,Client,ThreadCallback,pointer	proc setProcessThread(client: Client; threadCallback: ThreadCallback;\n                 arg: pointer = nil): cint		340
+nim	setThreadInitCallback	jacket.html#setThreadInitCallback,Client,ThreadInitCallback,pointer	proc setThreadInitCallback(client: Client; threadInitCallback: ThreadInitCallback;\n                      arg: pointer = nil): cint		343
+nim	setProcessCallback	jacket.html#setProcessCallback,Client,ProcessCallback,pointer	proc setProcessCallback(client: Client; processCallback: ProcessCallback;\n                   arg: pointer = nil): cint		346
+nim	setFreewheelCallback	jacket.html#setFreewheelCallback,Client,FreewheelCallback,pointer	proc setFreewheelCallback(client: Client; freewheelCallback: FreewheelCallback;\n                     arg: pointer = nil): cint		349
+nim	setBufferSizeCallback	jacket.html#setBufferSizeCallback,Client,BufferSizeCallback,pointer	proc setBufferSizeCallback(client: Client; bufsizeCallback: BufferSizeCallback;\n                      arg: pointer = nil): cint		352
+nim	setSampleRateCallback	jacket.html#setSampleRateCallback,Client,SampleRateCallback,pointer	proc setSampleRateCallback(client: Client; srateCallback: SampleRateCallback;\n                      arg: pointer = nil): cint		355
+nim	setClientRegistrationCallback	jacket.html#setClientRegistrationCallback,Client,ClientRegistrationCallback,pointer	proc setClientRegistrationCallback(client: Client;\n                              registrationCallback: ClientRegistrationCallback;\n                              arg: pointer = nil): cint		358
+nim	setPortRegistrationCallback	jacket.html#setPortRegistrationCallback,Client,PortRegistrationCallback,pointer	proc setPortRegistrationCallback(client: Client;\n                            registrationCallback: PortRegistrationCallback;\n                            arg: pointer = nil): cint		362
+nim	setPortConnectCallback	jacket.html#setPortConnectCallback,Client,PortConnectCallback,pointer	proc setPortConnectCallback(client: Client; connectCallback: PortConnectCallback;\n                       arg: pointer = nil): cint		366
+nim	setPortRenameCallback	jacket.html#setPortRenameCallback,Client,PortRenameCallback,pointer	proc setPortRenameCallback(client: Client; renameCallback: PortRenameCallback;\n                      arg: pointer = nil): cint		369
+nim	setGraphOrderCallback	jacket.html#setGraphOrderCallback,Client,GraphOrderCallback,pointer	proc setGraphOrderCallback(client: Client; graphCallback: GraphOrderCallback;\n                      arg: pointer = nil): cint		372
+nim	setXrunCallback	jacket.html#setXrunCallback,Client,XRunCallback,pointer	proc setXrunCallback(client: Client; xrunCallback: XRunCallback; arg: pointer = nil): cint		375
+nim	setLatencyCallback	jacket.html#setLatencyCallback,Client,LatencyCallback,pointer	proc setLatencyCallback(client: Client; latencyCallback: LatencyCallback;\n                   arg: pointer = nil): cint		378
+nim	setFreewheel	jacket.html#setFreewheel,Client,cint	proc setFreewheel(client: Client; onoff: cint): cint		385
+nim	setBufferSize	jacket.html#setBufferSize,Client,NFrames	proc setBufferSize(client: Client; nframes: NFrames): cint		388
+nim	getSampleRate	jacket.html#getSampleRate,Client	proc getSampleRate(client: Client): NFrames		391
+nim	getBufferSize	jacket.html#getBufferSize,Client	proc getBufferSize(client: Client): NFrames		394
+nim	cpuLoad	jacket.html#cpuLoad,Client	proc cpuLoad(client: Client): cfloat		397
+nim	portRegister	jacket.html#portRegister,Client,cstring,cstring,culong,culong	proc portRegister(client: Client; portName: cstring; portType: cstring;\n             flags: culong; bufferSize: culong): Port		411
+nim	portUnregister	jacket.html#portUnregister,Client,Port	proc portUnregister(client: Client; port: Port): cint		415
+nim	portGetBuffer	jacket.html#portGetBuffer,Port,NFrames	proc portGetBuffer(port: Port; nframes: NFrames): pointer		418
+nim	portUuid	jacket.html#portUuid,Port	proc portUuid(port: Port): Uuid		421
+nim	portName	jacket.html#portName,Port	proc portName(port: Port): cstring		424
+nim	portShortName	jacket.html#portShortName,Port	proc portShortName(port: Port): cstring		427
+nim	portFlags	jacket.html#portFlags,Port	proc portFlags(port: Port): cint		430
+nim	portType	jacket.html#portType,Port	proc portType(port: Port): cstring		433
+nim	portTypeId	jacket.html#portTypeId,Port	proc portTypeId(port: Port): PortTypeId		436
+nim	portIsMine	jacket.html#portIsMine,Client,Port	proc portIsMine(client: Client; port: Port): cint		439
+nim	portConnected	jacket.html#portConnected,Port	proc portConnected(port: Port): cint		443
+nim	portConnectedTo	jacket.html#portConnectedTo,Port,cstring	proc portConnectedTo(port: Port; portName: cstring): cint		447
+nim	portGetConnections	jacket.html#portGetConnections,Port	proc portGetConnections(port: Port): cstringArray		452
+nim	portGetAllConnections	jacket.html#portGetAllConnections,Client,Port	proc portGetAllConnections(client: Client; port: Port): cstringArray		458
+nim	portRename	jacket.html#portRename,Client,Port,cstring	proc portRename(client: Client; port: Port; portName: cstring): cint		462
+nim	portSetAlias	jacket.html#portSetAlias,Port,cstring	proc portSetAlias(port: Port; alias: cstring): cint		465
+nim	portUnsetAlias	jacket.html#portUnsetAlias,Port,cstring	proc portUnsetAlias(port: Port; alias: cstring): cint		468
+nim	portGetAliases	jacket.html#portGetAliases,Port,array[,cstring]	proc portGetAliases(port: Port; aliases: array[2, cstring]): cint		471
+nim	portRequestMonitor	jacket.html#portRequestMonitor,Port,cint	proc portRequestMonitor(port: Port; onoff: cint): cint		474
+nim	portRequestMonitorByName	jacket.html#portRequestMonitorByName,Client,cstring,cint	proc portRequestMonitorByName(client: Client; portName: cstring; onoff: cint): cint		478
+nim	portEnsureMonitor	jacket.html#portEnsureMonitor,Port,cint	proc portEnsureMonitor(port: Port; onoff: cint): cint		482
+nim	portMonitoringInput	jacket.html#portMonitoringInput,Port	proc portMonitoringInput(port: Port): cint		486
+nim	getPorts	jacket.html#getPorts,Client,cstring,cstring,culong	proc getPorts(client: Client; portNamePattern: cstring; typeNamePattern: cstring;\n         flags: culong): cstringArray		503
+nim	portByName	jacket.html#portByName,Client,cstring	proc portByName(client: Client; portName: cstring): Port		507
+nim	portById	jacket.html#portById,Client,PortId	proc portById(client: Client; portId: PortId): Port		510
+nim	connect	jacket.html#connect,Client,cstring,cstring	proc connect(client: Client; srcPort: cstring; destPort: cstring): cint		518
+nim	disconnect	jacket.html#disconnect,Client,cstring,cstring	proc disconnect(client: Client; srcPort: cstring; destPort: cstring): cint		523
+nim	portDisconnect	jacket.html#portDisconnect,Client,Port	proc portDisconnect(client: Client; port: Port): cint		526
+nim	portNameSize	jacket.html#portNameSize	proc portNameSize(): cint		529
+nim	portTypeSize	jacket.html#portTypeSize	proc portTypeSize(): cint		532
+nim	portTypeGetBufferSize	jacket.html#portTypeGetBufferSize,Client,cstring	proc portTypeGetBufferSize(client: Client; portType: cstring): csize_t		535
+nim	midiGetEventCount	jacket.html#midiGetEventCount,pointer	proc midiGetEventCount(portBuffer: pointer): NFrames		542
+nim	midiEventGet	jacket.html#midiEventGet,MidiEvent,pointer,uint32	proc midiEventGet(event: MidiEvent; portBuffer: pointer; eventIndex: uint32): cint		545
+nim	midiClearBuffer	jacket.html#midiClearBuffer,pointer	proc midiClearBuffer(portBuffer: pointer)		549
+nim	midiMaxEventSize	jacket.html#midiMaxEventSize,pointer	proc midiMaxEventSize(portBuffer: pointer): csize_t		552
+nim	midiEventReserve	jacket.html#midiEventReserve,pointer,NFrames,csize_t	proc midiEventReserve(portBuffer: pointer; time: NFrames; dataSize: csize_t): ptr MidiData		555
+nim	midiEventWrite	jacket.html#midiEventWrite,pointer,NFrames,ptr.MidiData,csize_t	proc midiEventWrite(portBuffer: pointer; time: NFrames; data: ptr MidiData;\n               dataSize: csize_t): cint		559
+nim	midiGetLostEventCount	jacket.html#midiGetLostEventCount,pointer	proc midiGetLostEventCount(portBuffer: pointer): uint32		563
+nim	portGetLatencyRange	jacket.html#portGetLatencyRange,Port,LatencyCallbackMode,ptr.LatencyRange	proc portGetLatencyRange(port: Port; mode: LatencyCallbackMode;\n                    range: ptr LatencyRange)		569
+nim	portSetLatencyRange	jacket.html#portSetLatencyRange,Port,LatencyCallbackMode,ptr.LatencyRange	proc portSetLatencyRange(port: Port; mode: LatencyCallbackMode;\n                    range: ptr LatencyRange)		573
+nim	recomputeTotalLatencies	jacket.html#recomputeTotalLatencies,Client	proc recomputeTotalLatencies(client: Client): cint		577
+nim	framesSinceCycleStart	jacket.html#framesSinceCycleStart,Client	proc framesSinceCycleStart(client: Client): NFrames		590
+nim	frameTime	jacket.html#frameTime,Client	proc frameTime(client: Client): NFrames		593
+nim	lastFrameTime	jacket.html#lastFrameTime,Client	proc lastFrameTime(client: Client): NFrames		596
+nim	getCycleTimes	jacket.html#getCycleTimes,Client,ptr.NFrames,ptr.Time,ptr.Time,ptr.cfloat	proc getCycleTimes(client: Client; currentFrames: ptr NFrames;\n              currentUsecs: ptr Time; nextUsecs: ptr Time;\n              periodUsecs: ptr cfloat): cint		603
+nim	framesToTime	jacket.html#framesToTime,Client,NFrames	proc framesToTime(client: Client; nframes: NFrames): Time		608
+nim	timeToFrames	jacket.html#timeToFrames,Client,Time	proc timeToFrames(client: Client; time: Time): NFrames		611
+nim	getTime	jacket.html#getTime	proc getTime(): Time		614
+nim	releaseTimebase	jacket.html#releaseTimebase,Client	proc releaseTimebase(client: Client): cint		620
+nim	setSyncCallback	jacket.html#setSyncCallback,Client,SyncCallback,pointer	proc setSyncCallback(client: Client; syncCallback: SyncCallback; arg: pointer = nil): cint		623
+nim	setSyncTimeout	jacket.html#setSyncTimeout,Client,Time	proc setSyncTimeout(client: Client; timeout: Time): cint		627
+nim	setTimebaseCallback	jacket.html#setTimebaseCallback,Client,cint,TimebaseCallback,pointer	proc setTimebaseCallback(client: Client; conditional: cint;\n                    timebaseCallback: TimebaseCallback; arg: pointer = nil): cint		633
+nim	transportLocate	jacket.html#transportLocate,Client,NFrames	proc transportLocate(client: Client; frame: NFrames): cint		638
+nim	transportQuery	jacket.html#transportQuery,Client,Position	proc transportQuery(client: Client; pos: Position): TransportState		641
+nim	getCurrentTransportFrame	jacket.html#getCurrentTransportFrame,Client	proc getCurrentTransportFrame(client: Client): NFrames		644
+nim	transportReposition	jacket.html#transportReposition,Client,Position	proc transportReposition(client: Client; pos: Position): cint		647
+nim	transportStart	jacket.html#transportStart,Client	proc transportStart(client: Client)		650
+nim	transportStop	jacket.html#transportStop,Client	proc transportStop(client: Client)		653
+nim	ringbufferCreate	jacket.html#ringbufferCreate,csize_t	proc ringbufferCreate(sz: csize_t): Ringbuffer		663
+nim	ringbufferFree	jacket.html#ringbufferFree,Ringbuffer	proc ringbufferFree(rb: Ringbuffer)		666
+nim	ringbufferGetReadVector	jacket.html#ringbufferGetReadVector,Ringbuffer,RingbufferData	proc ringbufferGetReadVector(rb: Ringbuffer; vec: var RingbufferData)		669
+nim	ringbufferGetWriteVector	jacket.html#ringbufferGetWriteVector,Ringbuffer,RingbufferData	proc ringbufferGetWriteVector(rb: Ringbuffer; vec: var RingbufferData)		672
+nim	ringbufferRead	jacket.html#ringbufferRead,Ringbuffer,cstring,csize_t	proc ringbufferRead(rb: Ringbuffer; dest: cstring; cnt: csize_t): csize_t		675
+nim	ringbufferPeek	jacket.html#ringbufferPeek,Ringbuffer,cstring,csize_t	proc ringbufferPeek(rb: Ringbuffer; dest: cstring; cnt: csize_t): csize_t		678
+nim	ringbufferReadAdvance	jacket.html#ringbufferReadAdvance,Ringbuffer,csize_t	proc ringbufferReadAdvance(rb: Ringbuffer; cnt: csize_t)		681
+nim	ringbufferReadSpace	jacket.html#ringbufferReadSpace,Ringbuffer	proc ringbufferReadSpace(rb: Ringbuffer): csize_t		684
+nim	ringbufferMlock	jacket.html#ringbufferMlock,Ringbuffer	proc ringbufferMlock(rb: Ringbuffer): cint		687
+nim	ringbufferReset	jacket.html#ringbufferReset,Ringbuffer	proc ringbufferReset(rb: Ringbuffer)		690
+nim	ringbufferWrite	jacket.html#ringbufferWrite,Ringbuffer,cstring,csize_t	proc ringbufferWrite(rb: Ringbuffer; src: cstring; cnt: csize_t): csize_t		693
+nim	ringbufferWriteAdvance	jacket.html#ringbufferWriteAdvance,Ringbuffer,csize_t	proc ringbufferWriteAdvance(rb: Ringbuffer; cnt: csize_t)		696
+nim	ringbufferWriteSpace	jacket.html#ringbufferWriteSpace,Ringbuffer	proc ringbufferWriteSpace(rb: Ringbuffer): csize_t		699
+nim	setProperty	jacket.html#setProperty,Client,Uuid,cstring,cstring,cstring	proc setProperty(client: Client; subject: Uuid; key, value, type: cstring): cint		704
+nim	getProperty	jacket.html#getProperty,Uuid,cstring,ptr.cstring,ptr.cstring	proc getProperty(subject: Uuid; key: cstring; value, type: ptr cstring): cint		707
+nim	freeDescription	jacket.html#freeDescription,Description,cint	proc freeDescription(desc: Description; freeDescriptionItself: cint)		710
+nim	getProperties	jacket.html#getProperties,Uuid,Description	proc getProperties(subject: Uuid; desc: Description): cint		713
+nim	getAllProperties	jacket.html#getAllProperties,ptr.UncheckedArray[DescriptionT]	proc getAllProperties(descs: var ptr UncheckedArray[DescriptionT]): cint		716
+nim	removeProperty	jacket.html#removeProperty,Client,Uuid	proc removeProperty(client: Client; subject: Uuid): cint		719
+nim	removeProperties	jacket.html#removeProperties,Client,Uuid	proc removeProperties(client: Client; subject: Uuid): cint		722
+nim	removeAllProperties	jacket.html#removeAllProperties,Client	proc removeAllProperties(client: Client): cint		725
+nim	setPropertyChangeCallback	jacket.html#setPropertyChangeCallback,Client,PropertyChangeCallback,pointer	proc setPropertyChangeCallback(client: Client; callback: PropertyChangeCallback;\n                          arg: pointer = nil): cint		728
+nim	setErrorFunction	jacket.html#setErrorFunction,ErrorCallback	proc setErrorFunction(errorCallback: ErrorCallback)		735
+nim	setInfoFunction	jacket.html#setInfoFunction,InfoCallback	proc setInfoFunction(infoCallback: InfoCallback)		738
+nim	getJackStatusErrorString	jacket.html#getJackStatusErrorString,cint	proc getJackStatusErrorString(status: cint): string		745
