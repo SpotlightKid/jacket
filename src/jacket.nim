@@ -743,13 +743,12 @@ proc setInfoFunction*(infoCallback: InfoCallback) {.importc: "jack_set_info_func
 # --------------------------- Helper functions ----------------------------
 
 proc getJackStatusErrorString*(status: cint): string =
-    # Get JACK error status as string.
-    if status == Success:
-        return ""
+    result = ""
 
     if status == Failure:
         # Only include this generic message if no other error status is set
         result = "Overall operation failed"
+
     if (status and InvalidOption) > 0:
         result.add("\nThe operation contained an invalid and unsupported option")
     if (status and NameNotUnique) > 0:
